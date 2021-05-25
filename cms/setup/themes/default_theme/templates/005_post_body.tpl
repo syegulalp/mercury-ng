@@ -10,7 +10,7 @@
 <hr>
 
 <!-- Date/Time -->
-<p>Posted on {{post.date_published}}</p>
+<p>Posted on {{post.date_published_str}}</p>
 
 <hr>
 
