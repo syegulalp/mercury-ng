@@ -53,6 +53,7 @@ post_edit_footer = """
     var removeTagLink = "{post.remove_tag_link}";
     var addMetadataLink = "{post.add_metadata_link}";
     var removeMetadataLink = "{post.remove_metadata_link}";
+    var blog_id = "{post.blog.id}";
 </script>
 <script src="/static/js/typeahead.js?{PRODUCT_VERSION}"></script>
 <script src="/static/js/tinymce/tinymce.min.js?{PRODUCT_VERSION}"></script>
@@ -161,7 +162,6 @@ def edit_post(user: User, post: Post):
 
     script = f"""<script>
 var upload_path = "{post.upload_link}";
-var blog_id = "{post.blog.id}";
 </script>
 <script src="/static/js/drop.js"></script>"""
 
