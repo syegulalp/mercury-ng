@@ -1,0 +1,1 @@
+<center><span class="badge yellow-link"><a href="/article">All articles</a></span>&nbsp;<span class="badge yellow-link"><a href="/title">All reviewed titles</a></span></center>

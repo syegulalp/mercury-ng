@@ -1,0 +1,3 @@
+<span class="amazon-product">
+
+<a href="https://www.amazon.com/gp/product/{{product}}/ref=as_li_ss_il?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN={{product}}&amp;linkCode=as2&amp;tag=thegline"><img alt="Buy at Amazon" title="Buy at Amazon" class="img img-responsive" border="0" src="https://ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&amp;ASIN={{product}}&amp;Format=_SS200_&amp;ID=AsinImage&amp;MarketPlace=US&amp;ServiceVersion=20070822&amp;WS=1&amp;tag=thegline"></a><img src="https://ir-na.amazon-adsystem.com/e/ir?t=thegline&amp;l=as2&amp;o=1&amp;a={{product}}" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;"></span>

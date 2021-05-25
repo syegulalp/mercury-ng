@@ -1,0 +1,476 @@
+{
+    "title": "Kagami",
+    "description": "Default theme used mainly for my blog.",
+    "templates": {
+        "0_monthly-post-archive.tpl": {
+            "id": 0,
+            "title": "Monthly Post Archive",
+            "type": 1,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$Y/$m/$i",
+                    false
+                ]
+            ]
+        },
+        "1_yearly-post-archive.tpl": {
+            "id": 1,
+            "title": "Yearly Post Archive",
+            "type": 1,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$Y/$i",
+                    false
+                ]
+            ]
+        },
+        "2_-htaccess.tpl": {
+            "id": 2,
+            "title": ".htaccess",
+            "type": 0,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    ".htaccess",
+                    false
+                ]
+            ]
+        },
+        "3_post.tpl": {
+            "id": 3,
+            "title": "Post",
+            "type": 2,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$Y/$m/$f",
+                    true
+                ]
+            ]
+        },
+        "4_sidebar-ssi.tpl": {
+            "id": 4,
+            "title": "Sidebar SSI",
+            "type": 4,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$s/sidebar.html",
+                    false
+                ]
+            ]
+        },
+        "5_post-body.tpl": {
+            "id": 5,
+            "title": "Post Body",
+            "type": 3,
+            "publishing_mode": 0,
+            "mappings": []
+        },
+        "6_page-head-block.tpl": {
+            "id": 6,
+            "title": "Page Head Block",
+            "type": 3,
+            "publishing_mode": 0,
+            "mappings": []
+        },
+        "7_page-head-block-ssi.tpl": {
+            "id": 7,
+            "title": "Page Head Block SSI",
+            "type": 4,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$s/header.html",
+                    false
+                ]
+            ]
+        },
+        "8_page-footer.tpl": {
+            "id": 8,
+            "title": "Page Footer",
+            "type": 4,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$s/footer.html",
+                    false
+                ]
+            ]
+        },
+        "9_atom-xml.tpl": {
+            "id": 9,
+            "title": "Atom.xml",
+            "type": 0,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "atom.xml",
+                    false
+                ]
+            ]
+        },
+        "10_custom-stylesheet.tpl": {
+            "id": 10,
+            "title": "Custom Stylesheet",
+            "type": 0,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "_static/css/custom.css",
+                    false
+                ]
+            ]
+        },
+        "11_rss-xml.tpl": {
+            "id": 11,
+            "title": "RSS.XML",
+            "type": 0,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "rss.xml",
+                    false
+                ]
+            ]
+        },
+        "12_menu.tpl": {
+            "id": 12,
+            "title": "Menu",
+            "type": 4,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$s/menu.html",
+                    false
+                ]
+            ]
+        },
+        "13_post-tags.tpl": {
+            "id": 13,
+            "title": "Post Tags",
+            "type": 3,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "",
+                    false
+                ]
+            ]
+        },
+        "14_blog-landing-page.tpl": {
+            "id": 14,
+            "title": "Blog Landing Page",
+            "type": 0,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "b/$i",
+                    false
+                ]
+            ]
+        },
+        "15_sidebar.tpl": {
+            "id": 15,
+            "title": "Sidebar",
+            "type": 3,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "",
+                    false
+                ]
+            ]
+        },
+        "16_homepage-articles.tpl": {
+            "id": 16,
+            "title": "Homepage Articles",
+            "type": 3,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "",
+                    false
+                ]
+            ]
+        },
+        "17_flash-message.tpl": {
+            "id": 17,
+            "title": "Flash Message",
+            "type": 4,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$s/flashmsg.html",
+                    false
+                ]
+            ]
+        },
+        "18_homepage-marketing.tpl": {
+            "id": 18,
+            "title": "Homepage Marketing",
+            "type": 3,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "",
+                    false
+                ]
+            ]
+        },
+        "19_category-archive.tpl": {
+            "id": 19,
+            "title": "Category Archive",
+            "type": 1,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$C/$i",
+                    false
+                ]
+            ]
+        },
+        "20_tag-archive.tpl": {
+            "id": 20,
+            "title": "Tag Archive",
+            "type": 1,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "tags/$t/$i",
+                    false
+                ]
+            ]
+        },
+        "21_tag-yearly-archive.tpl": {
+            "id": 21,
+            "title": "Tag Yearly Archive",
+            "type": 1,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "tags/$t/$Y/$i",
+                    false
+                ]
+            ]
+        },
+        "22_amazon-product.tpl": {
+            "id": 22,
+            "title": "Amazon Product",
+            "type": 3,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "",
+                    false
+                ]
+            ]
+        },
+        "23_category-alpha.tpl": {
+            "id": 23,
+            "title": "Category Alpha",
+            "type": 1,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$C/alpha/$i",
+                    false
+                ]
+            ]
+        },
+        "24_category-chrono.tpl": {
+            "id": 24,
+            "title": "Category Chrono",
+            "type": 1,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$C/chrono/$i",
+                    false
+                ]
+            ]
+        },
+        "25_category-monthly-archive.tpl": {
+            "id": 25,
+            "title": "Category Monthly Archive",
+            "type": 1,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$C/$Y/$m/$i",
+                    false
+                ]
+            ]
+        },
+        "26_previous-next.tpl": {
+            "id": 26,
+            "title": "Previous/Next",
+            "type": 3,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "",
+                    false
+                ]
+            ]
+        },
+        "27_editor-stylesheet.tpl": {
+            "id": 27,
+            "title": "Editor Stylesheet",
+            "type": 0,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "_static/css/editor.css",
+                    false
+                ]
+            ]
+        },
+        "28_category-headers.tpl": {
+            "id": 28,
+            "title": "Category Headers",
+            "type": 3,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "",
+                    false
+                ]
+            ]
+        },
+        "29_category-header-data.tpl": {
+            "id": 29,
+            "title": "Category Header Data",
+            "type": 3,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "",
+                    false
+                ]
+            ]
+        },
+        "30_faq-about-infinimata-press.tpl": {
+            "id": 30,
+            "title": "FAQ: About Infinimata Press",
+            "type": 0,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "faq/$i",
+                    false
+                ]
+            ]
+        },
+        "31_faq-about-me.tpl": {
+            "id": 31,
+            "title": "FAQ: About Me",
+            "type": 0,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "faq/about-me/$i",
+                    false
+                ]
+            ]
+        },
+        "32_faq-legal.tpl": {
+            "id": 32,
+            "title": "FAQ: Legal",
+            "type": 0,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "faq/legal/$i",
+                    false
+                ]
+            ]
+        },
+        "33_faq-point-in-time-disclaimer.tpl": {
+            "id": 33,
+            "title": "FAQ: Point-In-Time Disclaimer",
+            "type": 0,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "faq/point-in-time-disclaimer/$i",
+                    false
+                ]
+            ]
+        },
+        "34_disqus.tpl": {
+            "id": 34,
+            "title": "Disqus",
+            "type": 4,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$s/disqus.html",
+                    false
+                ]
+            ]
+        },
+        "35_homepage.tpl": {
+            "id": 35,
+            "title": "Homepage",
+            "type": 0,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$i",
+                    false
+                ]
+            ]
+        },
+        "36_homepage-book-carousel.tpl": {
+            "id": 36,
+            "title": "Homepage Book Carousel",
+            "type": 3,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "",
+                    false
+                ]
+            ]
+        },
+        "37_amazon-replacement.tpl": {
+            "id": 37,
+            "title": "Amazon Replacement",
+            "type": 3,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "",
+                    false
+                ]
+            ]
+        },
+        "38_two-screenshots-left.tpl": {
+            "id": 38,
+            "title": "Two screenshots (left)",
+            "type": 6,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "",
+                    false
+                ]
+            ]
+        },
+        "39_two-screenshots-right.tpl": {
+            "id": 39,
+            "title": "Two screenshots (right)",
+            "type": 6,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "",
+                    false
+                ]
+            ]
+        }
+    }
+}

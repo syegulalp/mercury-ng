@@ -1,0 +1,140 @@
+{
+    "title": "Default Theme",
+    "description": "Default theme included with new installations.",
+    "templates": {
+        "001_index_template.tpl": {
+            "id": 1,
+            "title": "Index Template",
+            "type": 0,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$i",
+                    false
+                ]
+            ]
+        },
+        "009_monthly_template.tpl": {
+            "id": 9,
+            "title": "Monthly Post Archive",
+            "type": 1,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$Y/$m/$i",
+                    false
+                ]
+            ]
+        },
+        "011_yearly_template.tpl": {
+            "id": 11,
+            "title": "Yearly Post Archive",
+            "type": 1,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$Y/$i",
+                    false
+                ]
+            ]
+        },
+        "010_htaccess.tpl": {
+            "id": 1,
+            "title": ".htaccess",
+            "type": 0,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    ".htaccess",
+                    false
+                ]
+            ]
+        },
+        "002_post_template.tpl": {
+            "id": 2,
+            "title": "Post Template",
+            "type": 2,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$Y/$m/$f",
+                    true
+                ]
+            ]
+        },
+        "003_sidebar_template.tpl": {
+            "id": 3,
+            "title": "Sidebar Template",
+            "type": 4,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$s/sidebar.html",
+                    false
+                ]
+            ]
+        },
+        "004_navigation_template.tpl": {
+            "id": 4,
+            "title": "Navigation Template",
+            "type": 4,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$s/nav.html",
+                    false
+                ]
+            ]
+        },
+        "005_post_body.tpl": {
+            "id": 5,
+            "title": "Post Body",
+            "type": 3,
+            "publishing_mode": 0,
+            "mappings": []
+        },
+        "006_page_head_block.tpl": {
+            "id": 6,
+            "title": "Page Head Block",
+            "type": 3,
+            "publishing_mode": 0,
+            "mappings": []
+        },
+        "007_page_head_block_ssi.tpl": {
+            "id": 7,
+            "title": "Page Head Block SSI",
+            "type": 4,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$s/header.html",
+                    false
+                ]
+            ]
+        },
+        "008_page_footer.tpl": {
+            "id": 8,
+            "title": "Page Footer",
+            "type": 4,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "$s/footer.html",
+                    false
+                ]
+            ]
+        },
+        "012_blog_css.tpl": {
+            "id": 1,
+            "title": "Blog CSS",
+            "type": 0,
+            "publishing_mode": 2,
+            "mappings": [
+                [
+                    "_static/css/blog.css",
+                    false
+                ]
+            ]
+        }
+    }
+}

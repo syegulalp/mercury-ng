@@ -1,0 +1,1 @@
+<div class="screenshot screenshot-double"><img src="{{media.url}}" alt="" /> <img src="https://via.placeholder.com/854x480.jpg" alt="" /><br />Type caption here.</div>

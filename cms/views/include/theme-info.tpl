@@ -1,0 +1,2 @@
+<h2><a href="/theme/{{theme.id}}/export/{{theme.safe_title}}.zip">Export theme as .zip package</a></h2>
+<p>Download a copy of the theme as a zip archive. This can be used to reinstall the theme later.</p>
