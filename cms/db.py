@@ -1,5 +1,5 @@
 import pathlib
-from . import settings
+from cms import settings
 
 from playhouse.sqlite_ext import SqliteExtDatabase as DBTYPE
 

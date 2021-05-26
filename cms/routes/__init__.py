@@ -1,7 +1,7 @@
 from bottle import default_app, error
-from . import context, setup, system, blog, post, template, media, queue, republish, me
-from ..errors import BlogPermissionError
-from ..models import unsafe
+from cms import context, setup, system, blog, post, template, media, queue, republish, me
+from cms.errors import BlogPermissionError
+from cms.models import unsafe
 
 
 @error(500)

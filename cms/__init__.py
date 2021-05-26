@@ -1,6 +1,6 @@
 import regex as re
 
-from . import settings
+from cms import settings
 
 import pathlib
 
@@ -18,7 +18,7 @@ peewee.re = re
 # First app boot check
 
 if not settings.DATABASE_PATH.exists():
-    from . import setup
+    from cms import setup
 
     setup.create_database()
 
