@@ -1,8 +1,8 @@
 from cms.models.models import Permission
 from bottle import template, request, redirect
-from ..models import User, Blog, Template, Post, Metadata, db, System, UserPermission
-from .. import settings
-from ..errors import UserNotLoggedIn, BlogPermissionError
+from cms.models import User, Blog, Template, Post, Metadata, db, System, UserPermission
+from cms import settings
+from cms.errors import UserNotLoggedIn, BlogPermissionError
 
 
 def bt_gen(blog):
