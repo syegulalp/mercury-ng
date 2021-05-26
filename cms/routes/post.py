@@ -59,6 +59,7 @@ post_edit_footer = """
 <script src="/static/js/tinymce/tinymce.min.js?{PRODUCT_VERSION}"></script>
 <script src="/static/js/notify.js?{PRODUCT_VERSION}"></script>
 <script src="/static/js/metadata.js?{PRODUCT_VERSION}"></script>
+<script src="/static/js/queue.js?{PRODUCT_VERSION}"></script>
 <script src="/static/js/editor.js?{PRODUCT_VERSION}"></script>
 """
 

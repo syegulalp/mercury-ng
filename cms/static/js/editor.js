@@ -141,12 +141,6 @@ function savePost() {
     })
 }
 
-function refreshQueue() {
-    $.get(`/blog/${blog_id}/queue-button`, function(data) {
-        $("#queue-button").replaceWith(data);
-    })
-}
-
 function addTag(item) {
     tag_to_add = $(item).typeahead('val');
     $.post(
