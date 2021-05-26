@@ -2,6 +2,7 @@
 
 in_progress = False
 
+
 def create_database():
     from cms.models.enums import UserPermission
     from cms import models

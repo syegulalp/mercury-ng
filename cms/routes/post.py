@@ -176,7 +176,6 @@ var upload_path = "{post.upload_link}";
     )
 
 
-
 @route("/blog/<blog_id:int>/post/<post_id:int>/save", method=("POST",))
 @db_context
 @post_context

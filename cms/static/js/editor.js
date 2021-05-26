@@ -30,8 +30,6 @@ function mediaListInit() {
         id = $(this).data('media-id');
         selectImageTemplate(id);
     })
-
-
 }
 
 function openImageBrowser() {
