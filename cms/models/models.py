@@ -839,7 +839,7 @@ class Blog(BaseModel):
                 style = "primary"
         if Queue.failures(self):
             style = "danger"
-        return f'<span class="badge badge-{style}">{queue_count}</span>'
+        return f'<span id="queue-badge" class="badge badge-{style}">{queue_count}</span>'
 
 
 class Category(BaseModel):
@@ -2756,7 +2756,7 @@ class System:
         queue_count = Queue.select().count()
         if Queue.failures():
             style = "danger"
-        return f'<span class="badge badge-{style}">{queue_count}</span>'
+        return f'<span id="queue-badge" class="badge badge-{style}">{queue_count}</span>'
 
 
 Post.add_index(

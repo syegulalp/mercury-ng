@@ -133,8 +133,8 @@ function savePost() {
             var win = window.open(popup, $('#post-basename').val());
             win.focus();
         }
-        queue_button = data[4];
-        $("#queue-button").replaceWith(queue_button);
+        queue_badge = data[4];
+        $("#queue-badge").replaceWith(queue_badge);
     }).fail(function(data) {
         $("#save-indicator").text("\u26d4")
         showNotification("danger", data);
@@ -313,5 +313,4 @@ $(document).ready(function() {
             e.returnValue = '';
         }
     });
-    window.setInterval(refreshQueue, 60000);
 })

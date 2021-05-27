@@ -367,20 +367,20 @@ def save_post(user: User, post: Post):
     )
 
     msg = template("include/notice.tpl", notice=notice)
-    queue_button = template("include/queue-button.tpl", blog=blog)
+    queue_badge = blog.queue_badge()
 
-    return json.dumps([sidebar, msg, popup, redir, queue_button])
+    return json.dumps([sidebar, msg, popup, redir, queue_badge])
 
     # TODO: we should also lock template editing when pages are in queue (easy solution)
     # and perhaps keep the queue from running as long as any needed template is open for editing (need to track open/shut)
     # or use some kind of internal template versioning
 
 
-@route("/blog/<blog_id:int>/queue-button")
+@route("/blog/<blog_id:int>/queue-badge")
 @db_context
 @blog_context
 def queue_button(blog: Blog):
-    return template("include/queue-button.tpl", blog=blog)
+    return blog.queue_badge()
 
 
 @route("/blog/<blog_id:int>/post/<post_id:int>/preview")

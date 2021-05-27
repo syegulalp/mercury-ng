@@ -1,5 +1,5 @@
 function refreshQueue() {
-    $.get(`/blog/${blog_id}/queue-button`, function(data) {
-        $("#queue-button").replaceWith(data);
+    $.get(`/blog/${blog_id}/queue-badge`, function(data) {
+        $("#queue-badge").replaceWith(data);
     })
 }
