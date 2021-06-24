@@ -58,6 +58,7 @@ import json
 import imp
 import zipfile
 import io
+import gc
 
 
 class TemplateError(Exception):
@@ -2387,6 +2388,7 @@ class Queue(BaseModel):
     @classmethod
     @db_context
     def run(cls, job, batch_count=None, batch_time_limit=None):
+        gc.disable()
         blog = job.blog
         batch = (
             cls.select()
@@ -2448,6 +2450,7 @@ class Queue(BaseModel):
                 if last_time > batch_time_limit:
                     break
 
+        gc.enable()
         return count, last_time
 
 
