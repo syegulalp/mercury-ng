@@ -46,10 +46,6 @@ def republish_options(user: User, blog: Blog):
     )
 
 
-# <li><a href="{l}/create-fileinfos"><b>Create fileinfos for template:</b></a> <input id="tp1" width="2"/>:</b> Delete and recreate fileinfos associated with a specific template.</li>
-# <li><a href="{l}/republish-template"><b>Republish template:</b></a>  <input id="tp2" width="2"/>:</b> Queue all fileinfos for a particular template for publication.</li>
-
-
 @route("/blog/<blog_id:int>/runqueue")
 @db_context
 @blog_context
