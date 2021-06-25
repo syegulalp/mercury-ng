@@ -840,7 +840,9 @@ class Blog(BaseModel):
                 style = "primary"
         if Queue.failures(self):
             style = "danger"
-        return f'<span id="queue-badge" class="badge badge-{style}">{queue_count}</span>'
+        return (
+            f'<span id="queue-badge" class="badge badge-{style}">{queue_count}</span>'
+        )
 
 
 class Category(BaseModel):
@@ -2024,13 +2026,6 @@ class FileInfo(BaseModel):
         }
         cls.build_fileinfos(None, blog, templates, mappings)
 
-    # @property
-    # def blog(self):
-    #     return self.templatemapping.template.blog
-
-    # def save(self, **ka):
-    #     self.unique_path = f"{self.blog.id},{self.filepath}"
-    #     super().save(self)
 
     @property
     def mappings(self):
@@ -2759,7 +2754,9 @@ class System:
         queue_count = Queue.select().count()
         if Queue.failures():
             style = "danger"
-        return f'<span id="queue-badge" class="badge badge-{style}">{queue_count}</span>'
+        return (
+            f'<span id="queue-badge" class="badge badge-{style}">{queue_count}</span>'
+        )
 
 
 Post.add_index(
