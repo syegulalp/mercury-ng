@@ -6,7 +6,7 @@ from cms.models.models import (
     FileInfo,
     UserPermission,
 )
-from bottle import route, template
+from bottle import route, template, request
 from ..models import Blog, Post, User, db_context, Queue, Context
 from .ui import make_menu
 from .context import blog_context, user_context, bt_gen
@@ -60,19 +60,32 @@ def run_queue(user: User, blog: Blog):
         return "Queue already running."
 
     job = c_jobs.where(Queue.status == QueueStatus.MANUAL)
-    if job.count() == 0:
+    job_count = job.count()
+    if job_count == 0:
         job = Queue.add_control(blog)
     else:
         job = job.get()
     job.lock()
 
-    count, timer = Queue.run.__wrapped__(Queue, job, batch_time_limit=2.0)
+    first_run = False
+    p = int(request.query.get("p", 0))
 
-    refresh = '<meta http-equiv="refresh" content="0;url=runqueue" />'
+    if p:
+        count, timer = Queue.run.__wrapped__(Queue, job, batch_time_limit=2.0)
+    else:
+        first_run = True
+        count = 0
+        remaining = (
+            Queue.jobs()
+            .where(Queue.blog == blog, Queue.date_inserted <= job.date_inserted)
+            .count()
+        )
 
+    p += 1
+    refresh = f'<meta http-equiv="refresh" content="0;url=runqueue?p={p}" />'
     redirect = "<p>Don't navigate away from this page!</p>"
 
-    if not count:
+    if not count and not first_run:
         job.delete_instance()
         refresh = ""
         remaining = 0
