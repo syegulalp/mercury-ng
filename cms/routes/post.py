@@ -311,6 +311,13 @@ def save_post(user: User, post: Post):
                 total = post.enqueue()
 
         elif post.status == PublicationStatus.PUBLISHED:
+
+            # if we're updating an already published post,
+            # write the permalink file first regardless of
+            # anything else
+            
+            post.permalink_fileinfo.write_file()
+
             if save_action == Actions.Published.SAVE_AND_UPDATE_LIVE:
                 notice.ok(f"Post updated live.")
                 total = post.enqueue()
