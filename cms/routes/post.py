@@ -678,6 +678,8 @@ def copy_post_core(user: User, post: Post):
         new_post.add_tag(tag)
     for media in old_post.media:
         MediaAssociation.create(post=new_post, media=media)
+    for kv in old_post.get_metadata():
+        new_post.set_metadata(kv.key, kv.value)
 
     new_post.clear_fileinfos()
     new_post.build_fileinfos()
