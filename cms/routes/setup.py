@@ -13,7 +13,7 @@ from ..models import (
 from .. import settings
 import pathlib
 
-setup_text = {
+SETUP_TEXT = {
     0: "Welcome to your blog's setup",
     1: "Your blog's name and description",
     2: "Your blog's URL and path",
@@ -32,7 +32,7 @@ def setup_step(step_id: int = 0):
 
 
 def step_0(step_id):
-    return template("setup/step_0.tpl", step_id=step_id, setup_text=setup_text)
+    return template("setup/step_0.tpl", step_id=step_id, setup_text=SETUP_TEXT)
 
 
 def create_first_blog():
@@ -55,7 +55,7 @@ def step_1(step_id):
         step_id=step_id,
         blog=first_blog,
         tab="",
-        setup_text=setup_text,
+        setup_text=SETUP_TEXT,
     )
 
 
@@ -75,7 +75,7 @@ def step_2(step_id):
         blog=first_blog,
         tab="url",
         setup=True,
-        setup_text=setup_text,
+        setup_text=SETUP_TEXT,
     )
 
 
@@ -96,7 +96,7 @@ def step_3(step_id):
     first_blog = Blog.get_by_id(1)
 
     return template(
-        "setup/confirm.tpl", step_id=step_id, blog=first_blog, setup_text=setup_text
+        "setup/confirm.tpl", step_id=step_id, blog=first_blog, setup_text=SETUP_TEXT
     )
 
 
@@ -117,7 +117,7 @@ def step_4(step_id):
     initialize_first_blog()
     leave_setup_mode()
 
-    return template("setup/finished.tpl", step_id=step_id, setup_text=setup_text)
+    return template("setup/finished.tpl", step_id=step_id, setup_text=SETUP_TEXT)
 
 
 def initialize_first_blog():
