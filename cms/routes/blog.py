@@ -26,7 +26,7 @@ from ..settings import PRODUCT_NAME
 import json
 import zipfile
 
-settings_tabs = {
+SETTINGS_TABS = {
     "": Tab("Name/Description", "/blog/{tabitem.id}/settings"),
     "media": Tab("Media", "/blog/{tabitem.id}/settings/media"),
     "url": Tab("URL/Filepath", "/blog/{tabitem.id}/settings/url"),
@@ -90,7 +90,7 @@ def blog_search(blog_id):
 @user_context(UserPermission.DESIGNER)
 def blog_settings(user: User, blog: Blog, tab: str = ""):
 
-    if tab not in settings_tabs:
+    if tab not in SETTINGS_TABS:
         tab = ""
 
     notice = Notice()
@@ -152,8 +152,8 @@ def blog_settings(user: User, blog: Blog, tab: str = ""):
     return template(
         "default.tpl",
         notice=notice,
-        menu=make_menu("blog_settings_category", [blog, settings_tabs[tab].title]),
-        tabs=settings_tabs,
+        menu=make_menu("blog_settings_category", [blog, SETTINGS_TABS[tab].title]),
+        tabs=SETTINGS_TABS,
         tab=tab,
         tabitem=blog,
         blog=current_blog,
