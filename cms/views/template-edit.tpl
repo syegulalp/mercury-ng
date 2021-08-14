@@ -1,5 +1,5 @@
 % from cms import settings
-% from cms.routes.template import template_sidebar as sidebar_items
+% from cms.routes.template import TEMPLATE_SIDEBAR as sidebar_items
 % from cms.models.enums import TemplateType, TemplatePublishingMode
 % from bottle import template
 % is_new = tpl.id is None

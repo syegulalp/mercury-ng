@@ -21,7 +21,7 @@ from ..settings import PRODUCT_NAME, PRODUCT_VERSION
 import hashlib
 import json
 
-template_tabs = {
+TEMPLATE_TABS = {
     "index": Tab("Index", "/blog/{tabitem.id}/templates"),
     "post": Tab("Post", "/blog/{tabitem.id}/templates/post"),
     "archive": Tab("Archive", "/blog/{tabitem.id}/templates/archive"),
@@ -30,7 +30,7 @@ template_tabs = {
     "media": Tab("Media", "/blog/{tabitem.id}/templates/media"),
 }
 
-template_tabs_filter = {
+TEMPLATE_TABS_FILTER = {
     "index": TemplateType.INDEX,
     "post": TemplateType.POST,
     "archive": TemplateType.ARCHIVE,
@@ -39,7 +39,7 @@ template_tabs_filter = {
     "media": TemplateType.MEDIA,
 }
 
-template_sidebar = {
+TEMPLATE_SIDEBAR = {
     "Publishing": "template/publish",
 }
 
@@ -63,7 +63,7 @@ def new_template_core(user: User, blog: Blog, template_type: str):
         theme=blog.theme,
         title="",
         text="",
-        template_type=template_tabs_filter[template_type],
+        template_type=TEMPLATE_TABS_FILTER[template_type],
         publishing_mode=TemplatePublishingMode.QUEUE,
     )
 
@@ -122,7 +122,7 @@ def blog_templates(user: User, blog: Blog, tab: str = "index"):
         Template.select()
         .where(
             Template.theme == blog.theme,
-            Template.template_type == template_tabs_filter[tab],
+            Template.template_type == TEMPLATE_TABS_FILTER[tab],
         )
         .order_by(Template.title)
     )
@@ -135,9 +135,9 @@ def blog_templates(user: User, blog: Blog, tab: str = "index"):
 
     return template(
         "default.tpl",
-        tabs=template_tabs,
+        tabs=TEMPLATE_TABS,
         tab=tab,
-        menu=make_menu("templates_category", [blog, template_tabs[tab].title]),
+        menu=make_menu("templates_category", [blog, TEMPLATE_TABS[tab].title]),
         text=grid,
         blog=blog,
         tabitem=blog,
@@ -260,7 +260,7 @@ def save_template(user: User, blog_template: Template, blog_id):
         "include/sidebar/base.tpl",
         tpl=blog_template,
         is_new=False,
-        sidebar_items=template_sidebar,
+        sidebar_items=TEMPLATE_SIDEBAR,
         template=template,
         TemplateType=TemplateType,
         TemplatePublishingMode=TemplatePublishingMode,
