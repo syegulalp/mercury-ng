@@ -2026,7 +2026,6 @@ class FileInfo(BaseModel):
         }
         cls.build_fileinfos(None, blog, templates, mappings)
 
-
     @property
     def mappings(self):
         return FileInfoMapping.select().where(FileInfoMapping.fileinfo == self)
