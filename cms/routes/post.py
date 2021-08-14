@@ -41,7 +41,7 @@ REMAKE_FILEINFO_ACTIONS = (
 )
 
 
-blog_sidebar = {
+BLOG_SIDEBAR = {
     "Publishing": "post/publishing",
     "Post Status": "post/status",
     "Tags": "post/tags",
@@ -50,7 +50,7 @@ blog_sidebar = {
     "Metadata": "post/metadata",
 }
 
-post_edit_footer = """
+POST_EDIT_FOOTER = """
 <script>
     var mediaInsertLink = "{post.media_insert_link}";
     var mediaTemplatesLink = "{post.media_templates_link}";
@@ -92,7 +92,7 @@ def new_post(user: User, blog: Blog):
         page_title=f"New post in {bt_gen(blog)}",
         post=post,
         blog=blog,
-        post_footer=post_edit_footer.format(post=post, PRODUCT_VERSION=PRODUCT_VERSION),
+        post_footer=POST_EDIT_FOOTER.format(post=post, PRODUCT_VERSION=PRODUCT_VERSION),
     )
 
 
@@ -180,7 +180,7 @@ var upload_path = "{post.upload_link}";
         post=post,
         blog=post.blog,
         post_footer=script
-        + post_edit_footer.format(post=post, PRODUCT_VERSION=PRODUCT_VERSION),
+        + POST_EDIT_FOOTER.format(post=post, PRODUCT_VERSION=PRODUCT_VERSION),
         page_title=f"Edit {post.title} (#{post.id}) / {bt_gen(post.blog)}",
     )
 
@@ -364,7 +364,7 @@ def save_post(user: User, post: Post):
         editor_button_colors=editor_button_colors,
         is_new=False,
         publication_statuses=PublicationStatus,
-        sidebar_items=blog_sidebar,
+        sidebar_items=BLOG_SIDEBAR,
         template=template,
         PublicationStatus=PublicationStatus,
         # date_to_str=date_to_str,

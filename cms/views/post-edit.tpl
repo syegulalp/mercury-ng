@@ -1,7 +1,7 @@
 % from cms import settings
 % from cms.models.enums import editor_button_colors, PublicationStatus, editor_actions
 % # from cms.models.utils import date_to_str
-% from cms.routes.post import blog_sidebar as sidebar_items
+% from cms.routes.post import BLOG_SIDEBAR as sidebar_items
 % from bottle import template
 %
 % is_new = post.id is None
