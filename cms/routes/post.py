@@ -32,6 +32,14 @@ import json
 import pathlib
 import hashlib
 
+REMAKE_FILEINFO_ACTIONS = (
+    (PublicationStatus.DRAFT, Actions.Draft.SAVE_AND_SCHEDULE),
+    (PublicationStatus.DRAFT, Actions.Draft.SAVE_AND_PUBLISH_NOW),
+    (PublicationStatus.SCHEDULED, Actions.Scheduled.SAVE_DRAFT),
+    (PublicationStatus.SCHEDULED, Actions.Scheduled.SAVE_AND_PUBLISH_NOW),
+    (PublicationStatus.PUBLISHED, Actions.Published.SAVE_AND_UPDATE_LIVE),
+)
+
 
 blog_sidebar = {
     "Publishing": "post/publishing",
@@ -254,13 +262,7 @@ def save_post(user: User, post: Post):
         if basename_changed or date_changed or categories_changed:
             remake_fileinfo = True
 
-        if (post.status, save_action) in (
-            (PublicationStatus.DRAFT, Actions.Draft.SAVE_AND_SCHEDULE),
-            (PublicationStatus.DRAFT, Actions.Draft.SAVE_AND_PUBLISH_NOW),
-            (PublicationStatus.SCHEDULED, Actions.Scheduled.SAVE_DRAFT),
-            (PublicationStatus.SCHEDULED, Actions.Scheduled.SAVE_AND_PUBLISH_NOW),
-            (PublicationStatus.PUBLISHED, Actions.Published.SAVE_AND_UPDATE_LIVE),
-        ):
+        if (post.status, save_action) in REMAKE_FILEINFO_ACTIONS:
             remake_fileinfo = True
 
         if remake_fileinfo:
