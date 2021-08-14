@@ -29,14 +29,14 @@ import pathlib
 import hashlib
 
 
-users_tabs = {
+USERS_TABS = {
     "name": Tab("Name/Email", "/user/{tabitem.id}"),
     "password": Tab("Password", "/user/{tabitem.id}/password"),
     "permissions": Tab("Permissions", "/user/{tabitem.id}/permissions"),
     "unlock": Tab("Unlock", "/user/{tabitem.id}/unlock"),
 }
 
-me_tabs = {
+ME_TABS = {
     "name": Tab("Name/Email", "/me"),
     "password": Tab("Password", "/me/password"),
     "unlock": Tab("Unlock", "/me/unlock"),
@@ -235,14 +235,14 @@ def user_view(user: User, system, user_id: int, tab="name"):
     return users_menu_base(user, system, user_id, tab)
 
 
-def users_menu_base(user: User, system, user_id: int, tab="name", tabs=users_tabs):
+def users_menu_base(user: User, system, user_id: int, tab="name", tabs=USERS_TABS):
 
     viewed_user: User = User.get_by_id(user_id)
     notice = Notice()
 
     # ToDO: not ideal way to verify permissions
 
-    if tabs is me_tabs:
+    if tabs is ME_TABS:
         menu = make_menu("user_me", context=user)
         admin = False
     else:

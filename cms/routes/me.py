@@ -2,7 +2,7 @@ from bottle import route, template, request
 from ..models import User, db_context, Post, UserPermission, System
 from .ui import format_grid, make_menu, make_buttons, Button, Notice
 from .context import user_context, bt_gen, system_context
-from .system import users_menu_base, me_tabs
+from .system import users_menu_base, ME_TABS
 
 import hashlib
 
@@ -12,7 +12,7 @@ import hashlib
 @db_context
 @user_context()
 def user_self_menu(user: User, tab="name"):
-    return users_menu_base(user, System, user_id=user.id, tab=tab, tabs=me_tabs)
+    return users_menu_base(user, System, user_id=user.id, tab=tab, tabs=ME_TABS)
 
 
 @route("/me/unlock")
