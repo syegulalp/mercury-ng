@@ -2111,8 +2111,8 @@ class Context(BaseModel):
     """
 
     fileinfo = ForeignKeyField(FileInfo, index=True)
-    context_type = CharField(max_length=1)
-    context_id = IntegerField()
+    context_type = CharField(max_length=1, index=True)
+    context_id = IntegerField(index=True)
     sort = IntegerField()
 
 
