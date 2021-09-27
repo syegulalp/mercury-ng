@@ -185,6 +185,142 @@ var upload_path = "{post.upload_link}";
     )
 
 
+def save_post_(post: Post, blog: Blog, notice: Notice, save_action: str):
+    title_changed = False
+    text_changed = False
+    date_changed = False
+    basename_changed = False
+    categories_changed = False
+    otherwise_dirty = False
+    remake_fileinfo = False
+
+    original_title = post.title
+    original_text = post.text
+    original_date = post.date_published
+    original_basename = post.basename
+
+    post.title = request.forms.post_title
+    post.text = request.forms.post_text
+    post.excerpt_ = (
+        None if request.forms.post_excerpt == "" else request.forms.post_excerpt
+    )
+    post.date_published = str_to_date(request.forms.date_published)
+    post.date_last_modified = datetime.datetime.utcnow()
+
+    _basename = request.forms.get("post-basename", None)
+    if _basename is not None:
+        post.basename = _basename
+
+    new_primary_category = int(request.forms.primary_category)
+    if post.primary_category.id != new_primary_category:
+        categories_changed = True
+        new_category_obj = Category.get_by_id(new_primary_category)
+        post.set_primary_category(new_category_obj)
+        notice.ok(f"New primary category set: {new_category_obj.title}")
+
+    form_subcategories = set(int(_) for _ in request.forms.getlist("subcategory"))
+    post_subcategories = set(_.id for _ in post.subcategories)
+    new_categories = form_subcategories.difference(post_subcategories)
+
+    for subcat in post.subcategories:
+        if subcat.id not in form_subcategories:
+            categories_changed = True
+            post.remove_subcategory(subcat)
+            notice.ok(f"Subcategory removed: {subcat.title}")
+
+    if len(new_categories):
+        categories_changed = True
+        for newcat in new_categories:
+            new_cat_obj = Category.get_by_id(newcat)
+            if new_cat_obj != post.primary_category:
+                post.add_subcategory(new_cat_obj)
+                notice.ok(f"Subcategory added: {new_cat_obj.title}")
+
+    if original_title != post.title:
+        title_changed = True
+    if original_text != post.text:
+        text_changed = True
+
+    # Change of title or text is not enough to trigger a remake of fileinfo
+    # but is worth recording for future use
+
+    if original_date != post.date_published:
+        date_changed = True
+    if original_basename != post.basename:
+        basename_changed = True
+        post.basename = post.create_basename()
+    if post.is_dirty is not None:
+        post.is_dirty = None
+        otherwise_dirty = True
+
+    if basename_changed or date_changed or categories_changed or otherwise_dirty:
+        remake_fileinfo = True
+
+    # if (post.status, save_action) in REMAKE_FILEINFO_ACTIONS:
+    #     remake_fileinfo = True
+
+    if remake_fileinfo:
+        # This is to queue the post's OLD neighbors
+        if post.status == PublicationStatus.PUBLISHED:
+            post.enqueue()
+            post.dequeue_post_archives()
+            post.queue_erase_post_archive_files()
+
+        post.clear_fileinfos()
+        post.build_fileinfos()
+
+    if save_action not in (Actions.Preview.PREVIEW_ONLY,):
+        post.save()
+        notice.ok(f"Post {post.title_for_display} saved successfully.")
+
+    if post.status == PublicationStatus.DRAFT:
+        if save_action == Actions.Draft.SAVE_DRAFT:
+            pass
+        elif save_action == Actions.Draft.SAVE_AND_SCHEDULE:
+            if post.date_published < datetime.datetime.utcnow():
+                notice.fail(
+                    'Post was scheduled to go live in the past. Status not changed. To publish this post immediately, select "Save and publish now".'
+                )
+            else:
+                post.status = PublicationStatus.SCHEDULED
+                post.save()
+                notice.ok(f"Post is now scheduled to go live at {post.date_published}.")
+
+        elif save_action == Actions.Draft.SAVE_AND_PUBLISH_NOW:
+            post.status = PublicationStatus.PUBLISHED
+            post.save()
+            notice.ok("Post is now live.")
+            post.enqueue()
+
+    elif post.status == PublicationStatus.SCHEDULED:
+        if save_action == Actions.Scheduled.SAVE_AND_UNSCHEDULE:
+            post.status = PublicationStatus.DRAFT
+            post.save()
+            notice.ok("Post is no longer scheduled.")
+
+        elif save_action == Actions.Scheduled.SAVE_AND_PUBLISH_NOW:
+            post.status = PublicationStatus.PUBLISHED
+            post.save()
+            notice.ok("Post is now live.")
+            post.enqueue()
+
+    elif post.status == PublicationStatus.PUBLISHED:
+
+        if save_action == Actions.Published.SAVE_AND_UPDATE_LIVE:
+            post.permalink_fileinfo.write_file()
+            notice.ok("Post updated live.")
+            post.enqueue()
+
+        elif save_action == Actions.Published.SAVE_DRAFT_ONLY:
+            notice.ok("Draft updated; live post not changed.")
+
+        elif save_action == Actions.Published.UNPUBLISH:
+            post.unpublish()
+            notice.ok("Post is no longer live.")
+
+    return remake_fileinfo
+
+
 @route("/blog/<blog_id:int>/post/<post_id:int>/save", method=("POST",))
 @db_context
 @post_context
@@ -195,151 +331,11 @@ def save_post(user: User, post: Post):
     notice = Notice()
 
     blog: Blog = post.blog
-    total = 0
+    queue_count = blog.queue_items.count()
+    remake_fileinfo = False
 
     try:
-
-        title_changed = False
-        text_changed = False
-        date_changed = False
-        basename_changed = False
-        categories_changed = False
-        otherwise_dirty = False
-        remake_fileinfo = False
-
-        queue_count = blog.queue_items.count()
-
-        original_title = post.title
-        original_text = post.text
-        original_date = post.date_published
-        original_basename = post.basename
-
-        post.title = request.forms.post_title
-        post.text = request.forms.post_text
-        post.excerpt_ = (
-            None if request.forms.post_excerpt == "" else request.forms.post_excerpt
-        )
-        post.date_published = str_to_date(request.forms.date_published)
-        post.date_last_modified = datetime.datetime.utcnow()
-
-        _basename = request.forms.get("post-basename", None)
-        if _basename is not None:
-            post.basename = _basename
-
-        new_primary_category = int(request.forms.primary_category)
-        if post.primary_category.id != new_primary_category:
-            categories_changed = True
-            new_category_obj = Category.get_by_id(new_primary_category)
-            post.set_primary_category(new_category_obj)
-            notice.ok(f"New primary category set: {new_category_obj.title}")
-
-        form_subcategories = set(int(_) for _ in request.forms.getlist("subcategory"))
-        post_subcategories = set(_.id for _ in post.subcategories)
-        new_categories = form_subcategories.difference(post_subcategories)
-
-        for subcat in post.subcategories:
-            if subcat.id not in form_subcategories:
-                categories_changed = True
-                post.remove_subcategory(subcat)
-                notice.ok(f"Subcategory removed: {subcat.title}")
-
-        if len(new_categories):
-            categories_changed = True
-            for newcat in new_categories:
-                new_cat_obj = Category.get_by_id(newcat)
-                if new_cat_obj != post.primary_category:
-                    post.add_subcategory(new_cat_obj)
-                    notice.ok(f"Subcategory added: {new_cat_obj.title}")
-
-        if original_title != post.title:
-            title_changed = True
-        if original_text != post.text:
-            text_changed = True
-        
-        # Change of title or text is not enough to trigger a remake of fileinfo
-        # but is worth recording for future use
-        
-        if original_date != post.date_published:
-            date_changed = True
-        if original_basename != post.basename:
-            basename_changed = True
-            post.basename = post.create_basename()
-        if post.is_dirty is not None:
-            post.is_dirty = None
-            otherwise_dirty = True
-
-        if basename_changed or date_changed or categories_changed or otherwise_dirty:
-            remake_fileinfo = True
-
-        # if (post.status, save_action) in REMAKE_FILEINFO_ACTIONS:
-        #     remake_fileinfo = True
-
-        if remake_fileinfo:
-            # This is to queue the post's OLD neighbors
-            if post.status == PublicationStatus.PUBLISHED:
-                # total_files_to_queue +=
-                post.enqueue()
-                post.dequeue_post_archives()
-                post.queue_erase_post_archive_files()
-
-            post.clear_fileinfos()
-            post.build_fileinfos()
-
-        if save_action not in (Actions.Preview.PREVIEW_ONLY,):
-            post.save()
-            notice.ok(f"Post {post.title_for_display} saved successfully.")
-
-        if post.status == PublicationStatus.DRAFT:
-            if save_action == Actions.Draft.SAVE_DRAFT:
-                pass
-            elif save_action == Actions.Draft.SAVE_AND_SCHEDULE:
-                if post.date_published < datetime.datetime.utcnow():
-                    notice.fail(
-                        'Post was scheduled to go live in the past. Status not changed. To publish this post immediately, select "Save and publish now".'
-                    )
-                else:
-                    post.status = PublicationStatus.SCHEDULED
-                    post.save()
-                    notice.ok(
-                        f"Post is now scheduled to go live at {post.date_published}."
-                    )
-
-            elif save_action == Actions.Draft.SAVE_AND_PUBLISH_NOW:
-                post.status = PublicationStatus.PUBLISHED
-                post.save()
-                notice.ok("Post is now live.")
-                # total_files_to_queue +=
-                post.enqueue()
-
-        elif post.status == PublicationStatus.SCHEDULED:
-            if save_action == Actions.Scheduled.SAVE_AND_UNSCHEDULE:
-                post.status = PublicationStatus.DRAFT
-                post.save()
-                notice.ok("Post is no longer scheduled.")
-
-            elif save_action == Actions.Scheduled.SAVE_AND_PUBLISH_NOW:
-                post.status = PublicationStatus.PUBLISHED
-                post.save()
-                notice.ok("Post is now live.")
-                # total_files_to_queue +=
-                post.enqueue()
-
-        elif post.status == PublicationStatus.PUBLISHED:
-
-            if save_action == Actions.Published.SAVE_AND_UPDATE_LIVE:
-                post.permalink_fileinfo.write_file()
-                notice.ok("Post updated live.")
-                # total_files_to_queue +=
-                post.enqueue()
-
-            elif save_action == Actions.Published.SAVE_DRAFT_ONLY:
-                notice.ok("Draft updated; live post not changed.")
-
-            elif save_action == Actions.Published.UNPUBLISH:
-                # total_files_to_queue +=
-                post.unpublish()
-                notice.ok("Post is no longer live.")
-
+        remake_fileinfo = save_post_(post, blog, notice, save_action)
     except Exception as e:
         notice.fail(f"Error: {e}")
 
