@@ -260,8 +260,8 @@ def save_post(user: User, post: Post):
         if original_basename != post.basename:
             basename_changed = True
             post.basename = post.create_basename()
-        if post.absolute_path is not None:
-            post.absolute_path = None
+        if post.is_dirty is not None:
+            post.is_dirty = None
             otherwise_dirty = True
 
         if basename_changed or date_changed or categories_changed or otherwise_dirty:
@@ -580,7 +580,7 @@ def add_tag(user: User, post: Post):
             post.tags.where(Tag.id == new_tag.id).get()
         except Tag.DoesNotExist:
             post.add_tag(new_tag)
-            post.absolute_path = "T"
+            post.is_dirty = True
             post.save()
 
     return template("include/sidebar/post/tag-sublist.tpl", no_input=True, post=post)
@@ -600,7 +600,7 @@ def remove_tag(user: User, post: Post):
         pass
     else:
         post.remove_tag(new_tag)
-        post.absolute_path = "T"
+        post.is_dirty = True
         post.save()
 
     return template("include/sidebar/post/tag-sublist.tpl", no_input=True, post=post)
