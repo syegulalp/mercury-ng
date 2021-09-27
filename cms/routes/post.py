@@ -255,6 +255,10 @@ def save_post(user: User, post: Post):
             title_changed = True
         if original_text != post.text:
             text_changed = True
+        
+        # Change of title or text is not enough to trigger a remake of fileinfo
+        # but is worth recording for future use
+        
         if original_date != post.date_published:
             date_changed = True
         if original_basename != post.basename:
