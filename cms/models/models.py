@@ -1344,7 +1344,7 @@ class Post(BaseModel):
 
         for n in neighbors:
             for p in n:
-                print(p.title)
+                # print(p.title)
                 total += p.enqueue(neighbors=False, indices=False)
 
         return total
@@ -2043,7 +2043,7 @@ class FileInfo(BaseModel):
         return f"{self.filepath}.preview.{self.blog.base_filetype}"
 
     def write_preview_file(self):
-        print(self.id)
+        # print(self.id)
         self.write_file(True)
         self.update(preview_built=True).where(FileInfo.id == self).execute()
 

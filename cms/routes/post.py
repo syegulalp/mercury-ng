@@ -499,7 +499,7 @@ def file_upload_core(user, blog: Blog, post=None):
         if not initial_save_path.exists():
             initial_save_path.mkdir(parents=True)
 
-        print("Save path", initial_save_path)
+        # print("Save path", initial_save_path)
 
         uploaded_filename, file_extension = f.filename.rsplit(".", 1)
 
@@ -521,7 +521,7 @@ def file_upload_core(user, blog: Blog, post=None):
 
         final_save_path = pathlib.Path(initial_save_path, final_filename)
 
-        print("Final path", final_save_path)
+        # print("Final path", final_save_path)
 
         f.save(str(final_save_path))
 

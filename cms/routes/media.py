@@ -137,7 +137,7 @@ def media_edit(user: User, blog: Blog, media_id: int):
 
     media_item: Media = Media.get_by_id(media_id)
 
-    print([post.id for post in media_item.posts])
+    # print([post.id for post in media_item.posts])
 
     notice = Notice()
 
