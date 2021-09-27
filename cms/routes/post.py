@@ -291,7 +291,7 @@ def save_post(user: User, post: Post):
             elif save_action == Actions.Draft.SAVE_AND_SCHEDULE:
                 if post.date_published < datetime.datetime.utcnow():
                     notice.fail(
-                        f'Post was scheduled to go live in the past. Status not changed. To publish this post immediately, select "Save and publish now".'
+                        'Post was scheduled to go live in the past. Status not changed. To publish this post immediately, select "Save and publish now".'
                     )
                 else:
                     post.status = PublicationStatus.SCHEDULED
@@ -303,7 +303,7 @@ def save_post(user: User, post: Post):
             elif save_action == Actions.Draft.SAVE_AND_PUBLISH_NOW:
                 post.status = PublicationStatus.PUBLISHED
                 post.save()
-                notice.ok(f"Post is now live.")
+                notice.ok("Post is now live.")
                 # total_files_to_queue +=
                 post.enqueue()
 
@@ -311,12 +311,12 @@ def save_post(user: User, post: Post):
             if save_action == Actions.Scheduled.SAVE_AND_UNSCHEDULE:
                 post.status = PublicationStatus.DRAFT
                 post.save()
-                notice.ok(f"Post is no longer scheduled.")
+                notice.ok("Post is no longer scheduled.")
 
             elif save_action == Actions.Scheduled.SAVE_AND_PUBLISH_NOW:
                 post.status = PublicationStatus.PUBLISHED
                 post.save()
-                notice.ok(f"Post is now live.")
+                notice.ok("Post is now live.")
                 # total_files_to_queue +=
                 post.enqueue()
 
@@ -324,17 +324,17 @@ def save_post(user: User, post: Post):
 
             if save_action == Actions.Published.SAVE_AND_UPDATE_LIVE:
                 post.permalink_fileinfo.write_file()
-                notice.ok(f"Post updated live.")
+                notice.ok("Post updated live.")
                 # total_files_to_queue +=
                 post.enqueue()
 
             elif save_action == Actions.Published.SAVE_DRAFT_ONLY:
-                notice.ok(f"Draft updated; live post not changed.")
+                notice.ok("Draft updated; live post not changed.")
 
             elif save_action == Actions.Published.UNPUBLISH:
                 # total_files_to_queue +=
                 post.unpublish()
-                notice.ok(f"Post is no longer live.")
+                notice.ok("Post is no longer live.")
 
     except Exception as e:
         notice.fail(f"Error: {e}")
@@ -350,8 +350,11 @@ def save_post(user: User, post: Post):
     else:
         if post.status != PublicationStatus.DRAFT:
             notice.ok(
-                f"No files sent to queue. (Files may already be in process or nothing to enqueue.)"
+                "No files sent to queue. (Files may already be in process or nothing to enqueue.)"
             )
+
+    if remake_fileinfo:
+        notice.ok("Fileinfos rebuilt for post.")
 
     redir = ""
     popup = ""
