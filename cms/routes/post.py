@@ -32,13 +32,13 @@ import json
 import pathlib
 import hashlib
 
-REMAKE_FILEINFO_ACTIONS = (
-    (PublicationStatus.DRAFT, Actions.Draft.SAVE_AND_SCHEDULE),
-    (PublicationStatus.DRAFT, Actions.Draft.SAVE_AND_PUBLISH_NOW),
-    (PublicationStatus.SCHEDULED, Actions.Scheduled.SAVE_DRAFT),
-    (PublicationStatus.SCHEDULED, Actions.Scheduled.SAVE_AND_PUBLISH_NOW),
-    (PublicationStatus.PUBLISHED, Actions.Published.SAVE_AND_UPDATE_LIVE),
-)
+# REMAKE_FILEINFO_ACTIONS = (
+#     (PublicationStatus.DRAFT, Actions.Draft.SAVE_AND_SCHEDULE),
+#     (PublicationStatus.DRAFT, Actions.Draft.SAVE_AND_PUBLISH_NOW),
+#     (PublicationStatus.SCHEDULED, Actions.Scheduled.SAVE_DRAFT),
+#     (PublicationStatus.SCHEDULED, Actions.Scheduled.SAVE_AND_PUBLISH_NOW),
+#     (PublicationStatus.PUBLISHED, Actions.Published.SAVE_AND_UPDATE_LIVE),
+# )
 
 
 BLOG_SIDEBAR = {
@@ -203,14 +203,16 @@ def save_post(user: User, post: Post):
         text_changed = False
         date_changed = False
         basename_changed = False
-        remake_fileinfo = False
         categories_changed = False
+        otherwise_dirty = False
+        remake_fileinfo = False
+
+        queue_count = blog.queue_items.count()
 
         original_title = post.title
         original_text = post.text
         original_date = post.date_published
         original_basename = post.basename
-        # original_primary_category = post.primary_category
 
         post.title = request.forms.post_title
         post.text = request.forms.post_text
@@ -258,16 +260,20 @@ def save_post(user: User, post: Post):
         if original_basename != post.basename:
             basename_changed = True
             post.basename = post.create_basename()
+        if post.absolute_path is not None:
+            post.absolute_path = None
+            otherwise_dirty = True
 
-        if basename_changed or date_changed or categories_changed:
+        if basename_changed or date_changed or categories_changed or otherwise_dirty:
             remake_fileinfo = True
 
-        if (post.status, save_action) in REMAKE_FILEINFO_ACTIONS:
-            remake_fileinfo = True
+        # if (post.status, save_action) in REMAKE_FILEINFO_ACTIONS:
+        #     remake_fileinfo = True
 
         if remake_fileinfo:
             # This is to queue the post's OLD neighbors
             if post.status == PublicationStatus.PUBLISHED:
+                # total_files_to_queue +=
                 post.enqueue()
                 post.dequeue_post_archives()
                 post.queue_erase_post_archive_files()
@@ -298,7 +304,8 @@ def save_post(user: User, post: Post):
                 post.status = PublicationStatus.PUBLISHED
                 post.save()
                 notice.ok(f"Post is now live.")
-                total = post.enqueue()
+                # total_files_to_queue +=
+                post.enqueue()
 
         elif post.status == PublicationStatus.SCHEDULED:
             if save_action == Actions.Scheduled.SAVE_AND_UNSCHEDULE:
@@ -310,20 +317,23 @@ def save_post(user: User, post: Post):
                 post.status = PublicationStatus.PUBLISHED
                 post.save()
                 notice.ok(f"Post is now live.")
-                total = post.enqueue()
+                # total_files_to_queue +=
+                post.enqueue()
 
         elif post.status == PublicationStatus.PUBLISHED:
 
             if save_action == Actions.Published.SAVE_AND_UPDATE_LIVE:
                 post.permalink_fileinfo.write_file()
                 notice.ok(f"Post updated live.")
-                total = post.enqueue()
+                # total_files_to_queue +=
+                post.enqueue()
 
             elif save_action == Actions.Published.SAVE_DRAFT_ONLY:
                 notice.ok(f"Draft updated; live post not changed.")
 
             elif save_action == Actions.Published.UNPUBLISH:
-                total = post.unpublish()
+                # total_files_to_queue +=
+                post.unpublish()
                 notice.ok(f"Post is no longer live.")
 
     except Exception as e:
@@ -331,8 +341,10 @@ def save_post(user: User, post: Post):
 
     post.update_index()
 
-    if total:
-        notice.ok(f"<b>{total} file(s)</b> sent to queue.")
+    final_queue_count = blog.queue_items.count() - queue_count
+
+    if final_queue_count:
+        notice.ok(f"<b>{final_queue_count} file(s)</b> sent to queue.")
         if not blog.get_metadata("no_autorun_queue"):
             Queue.start(blog)
     else:
@@ -367,7 +379,6 @@ def save_post(user: User, post: Post):
         sidebar_items=BLOG_SIDEBAR,
         template=template,
         PublicationStatus=PublicationStatus,
-        # date_to_str=date_to_str,
     )
 
     msg = template("include/notice.tpl", notice=notice)
@@ -566,6 +577,8 @@ def add_tag(user: User, post: Post):
             post.tags.where(Tag.id == new_tag.id).get()
         except Tag.DoesNotExist:
             post.add_tag(new_tag)
+            post.absolute_path = "T"
+            post.save()
 
     return template("include/sidebar/post/tag-sublist.tpl", no_input=True, post=post)
 
@@ -584,6 +597,8 @@ def remove_tag(user: User, post: Post):
         pass
     else:
         post.remove_tag(new_tag)
+        post.absolute_path = "T"
+        post.save()
 
     return template("include/sidebar/post/tag-sublist.tpl", no_input=True, post=post)
 

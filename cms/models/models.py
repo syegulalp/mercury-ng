@@ -1268,12 +1268,14 @@ class Post(BaseModel):
         Push this post and all its related archives, and the site indexes, to the queue.
         """
 
-        blog = self.blog
+        blog: Blog = self.blog
+        fileinfo: FileInfo
 
         # if self.fileinfos.count() == 0:
         #     self.build_fileinfos()
 
         total = 0
+
         for fileinfo in self.fileinfos:
             _, count = fileinfo.enqueue()
             total += count
@@ -1344,7 +1346,6 @@ class Post(BaseModel):
 
         for n in neighbors:
             for p in n:
-                # print(p.title)
                 total += p.enqueue(neighbors=False, indices=False)
 
         return total
