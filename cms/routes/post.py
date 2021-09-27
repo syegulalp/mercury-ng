@@ -284,7 +284,7 @@ def save_post_(post: Post, blog: Blog, notice: Notice, save_action: str):
             else:
                 post.status = PublicationStatus.SCHEDULED
                 post.save()
-                notice.ok(f"Post is now scheduled to go live at {post.date_published}.")
+                notice.ok(f"Post is now scheduled to go live at <b>{post.date_published}</b>.")
 
         elif save_action == Actions.Draft.SAVE_AND_PUBLISH_NOW:
             post.status = PublicationStatus.PUBLISHED
