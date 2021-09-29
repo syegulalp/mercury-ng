@@ -2633,13 +2633,15 @@ class ArchiveContext:
         tag = None
         category = None
 
+        cc = Context.select(Context.fileinfo)
+
         for n in self._fileinfo.context:
             if n.context_type == "t":
-                tag = Context.select(Context.fileinfo).where(
+                tag = cc.where(
                     Context.context_type == "t", Context.context_id == n.context_id
                 )
             if n.context_type == "C":
-                category = Context.select(Context.fileinfo).where(
+                category = cc.where(
                     Context.context_type == "C", Context.context_id == n.context_id
                 )
 
@@ -2685,14 +2687,15 @@ class ArchiveContext:
 
         tag = None
         category = None
+        cc = Context.select(Context.fileinfo)
 
         for n in self._fileinfo.context:
             if n.context_type == "t":
-                tag = Context.select(Context.fileinfo).where(
+                tag = cc.where(
                     Context.context_type == "t", Context.context_id == n.context_id
                 )
             if n.context_type == "C":
-                category = Context.select(Context.fileinfo).where(
+                category = cc.where(
                     Context.context_type == "C", Context.context_id == n.context_id
                 )
 

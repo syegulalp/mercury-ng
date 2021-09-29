@@ -152,6 +152,8 @@ def live_redirect(blog_id, post_id):
         return "No such post or post not live"
     return redirect(post.permalink)
 
+def edit_page_title(post: Post):
+    return f"Edit: {post.title} (#{post.id}) / {bt_gen(post.blog)}"
 
 @route("/blog/<blog_id:int>/post/<post_id:int>/edit")
 @db_context
@@ -181,7 +183,7 @@ var upload_path = "{post.upload_link}";
         blog=post.blog,
         post_footer=script
         + POST_EDIT_FOOTER.format(post=post, PRODUCT_VERSION=PRODUCT_VERSION),
-        page_title=f"Edit {post.title} (#{post.id}) / {bt_gen(post.blog)}",
+        page_title=edit_page_title(post),
     )
 
 
@@ -276,7 +278,9 @@ def save_post_(post: Post, blog: Blog, notice: Notice, save_action: str):
     if post.status == PublicationStatus.DRAFT:
         if save_action == Actions.Draft.SAVE_DRAFT:
             pass
+
         elif save_action == Actions.Draft.SAVE_AND_SCHEDULE:
+
             if post.date_published < datetime.datetime.utcnow():
                 notice.fail(
                     'Post was scheduled to go live in the past. Status not changed. To publish this post immediately, select "Save and publish now".'
@@ -284,15 +288,19 @@ def save_post_(post: Post, blog: Blog, notice: Notice, save_action: str):
             else:
                 post.status = PublicationStatus.SCHEDULED
                 post.save()
-                notice.ok(f"Post is now scheduled to go live at <b>{post.date_published}</b>.")
+                notice.ok(
+                    f"Post is now scheduled to go live at <b>{post.date_published}</b>."
+                )
 
         elif save_action == Actions.Draft.SAVE_AND_PUBLISH_NOW:
+
             post.status = PublicationStatus.PUBLISHED
             post.save()
             notice.ok("Post is now live.")
             post.enqueue()
 
     elif post.status == PublicationStatus.SCHEDULED:
+
         if save_action == Actions.Scheduled.SAVE_AND_UNSCHEDULE:
             post.status = PublicationStatus.DRAFT
             post.save()
@@ -387,7 +395,10 @@ def save_post(user: User, post: Post):
     msg = template("include/notice.tpl", notice=notice)
     queue_badge = blog.queue_badge()
 
-    return json.dumps([sidebar, msg, popup, redir, queue_badge])
+    return json.dumps([sidebar, msg, popup, redir, queue_badge, edit_page_title(post)])
+
+    # TODO: return altered page title, too, when we rename the post
+    # use common function to generate that for when we open the page
 
     # TODO: we should also lock template editing when pages are in queue (easy solution)
     # and perhaps keep the queue from running as long as any needed template is open for editing (need to track open/shut)

@@ -135,6 +135,7 @@ function savePost() {
         }
         queue_badge = data[4];
         $("#queue-badge").replaceWith(queue_badge);
+        document.title = data[5];
     }).fail(function(data) {
         $("#save-indicator").text("\u26d4")
         showNotification("danger", data);
