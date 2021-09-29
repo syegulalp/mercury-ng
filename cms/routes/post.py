@@ -21,7 +21,7 @@ from cms.models import (
 )
 from cms.routes.ui import make_menu, Notice, format_grid
 from cms.routes.context import blog_context, user_context, post_context, bt_gen
-from cms.models.utils import date_to_str, str_to_date, unsafe
+from cms.models.utils import str_to_date, unsafe
 from cms.settings import PRODUCT_VERSION
 
 # TODO: all notices must have `unsafe`!
@@ -280,7 +280,7 @@ def save_post_(post: Post, blog: Blog, notice: Notice, save_action: str):
 
     if post.status == PublicationStatus.DRAFT:
         if save_action == Actions.Draft.SAVE_DRAFT:
-            pass
+            notice.ok(f"Draft updated.")
 
         elif save_action == Actions.Draft.SAVE_AND_SCHEDULE:
 
