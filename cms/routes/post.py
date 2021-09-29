@@ -152,8 +152,10 @@ def live_redirect(blog_id, post_id):
         return "No such post or post not live"
     return redirect(post.permalink)
 
+
 def edit_page_title(post: Post):
     return f"Edit: {post.title} (#{post.id}) / {bt_gen(post.blog)}"
+
 
 @route("/blog/<blog_id:int>/post/<post_id:int>/edit")
 @db_context
@@ -396,9 +398,6 @@ def save_post(user: User, post: Post):
     queue_badge = blog.queue_badge()
 
     return json.dumps([sidebar, msg, popup, redir, queue_badge, edit_page_title(post)])
-
-    # TODO: return altered page title, too, when we rename the post
-    # use common function to generate that for when we open the page
 
     # TODO: we should also lock template editing when pages are in queue (easy solution)
     # and perhaps keep the queue from running as long as any needed template is open for editing (need to track open/shut)
