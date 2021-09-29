@@ -262,14 +262,11 @@ def save_template(user: User, blog_template: Template, blog_id):
         is_new=False,
         sidebar_items=TEMPLATE_SIDEBAR,
         template=template,
-        TemplateType=TemplateType,
-        TemplatePublishingMode=TemplatePublishingMode,
     )
 
     msg = template("include/notice.tpl", notice=notice)
 
     return json.dumps([sidebar, msg, redir])
-    # `return f"<div>{sidebar}</div><div>{msg}</div><div>{redir}</div>"
 
 
 @route("/blog/<blog_id:int>/template/<template_id:int>/republish")

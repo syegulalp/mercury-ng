@@ -1,3 +1,4 @@
+% from cms.models.enums import TemplateType, TemplatePublishingMode
 <input type="hidden" name="save_action" id="save_action">
 
 % if is_new:

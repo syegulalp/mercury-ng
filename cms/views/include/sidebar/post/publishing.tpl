@@ -5,9 +5,9 @@
 </div>
 % else:
 
+% from cms.models.enums import Actions, editor_actions, editor_button_colors, PublicationStatus
 % actions = editor_actions[post.status]
 % button_color = f"btn-{editor_button_colors[post.status]}"
-% from cms.models.enums import Actions
 
 <input type="hidden" name="save_action" id="save_action">
 

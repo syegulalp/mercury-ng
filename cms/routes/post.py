@@ -385,13 +385,9 @@ def save_post(user: User, post: Post):
         "include/sidebar/base.tpl",
         post=post,
         blog=blog,
-        editor_actions=editor_actions,
-        editor_button_colors=editor_button_colors,
         is_new=False,
-        publication_statuses=PublicationStatus,
         sidebar_items=BLOG_SIDEBAR,
         template=template,
-        PublicationStatus=PublicationStatus,
     )
 
     msg = template("include/notice.tpl", notice=notice)
