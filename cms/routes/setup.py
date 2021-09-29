@@ -1,5 +1,5 @@
 from bottle import route, template, request, redirect
-from ..models import (
+from cms.models import (
     Blog,
     Metadata,
     Theme,
@@ -10,7 +10,7 @@ from ..models import (
     Queue,
     db_context,
 )
-from .. import settings
+from cms import settings
 import pathlib
 
 SETUP_TEXT = {

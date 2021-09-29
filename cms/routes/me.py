@@ -1,8 +1,8 @@
 from bottle import route, template, request
-from ..models import User, db_context, Post, UserPermission, System
-from .ui import format_grid, make_menu, make_buttons, Button, Notice
-from .context import user_context, bt_gen, system_context
-from .system import users_menu_base, ME_TABS
+from cms.models import User, db_context, Post, System
+from cms.routes.ui import format_grid, make_menu, make_buttons, Button, Notice
+from cms.routes.context import user_context, bt_gen, system_context
+from cms.routes.system import users_menu_base, ME_TABS
 
 import hashlib
 

@@ -9,9 +9,9 @@ from bottle import (
     view,
     HTTPResponse,
 )
-from .ui import make_menu, make_buttons, format_grid, Button, Notice, Tab
-from .context import user_context, system_context
-from ..models import (
+from cms.routes.ui import make_menu, make_buttons, format_grid, Button, Notice, Tab
+from cms.routes.context import user_context, system_context
+from cms.models import (
     User,
     Blog,
     Theme,
@@ -22,9 +22,9 @@ from ..models import (
     UserPermission,
     Metadata,
 )
-from ..settings import PRODUCT_NAME, APP_DIR
-from .. import settings
-from ..errors import UserNotLoggedIn
+from cms.settings import PRODUCT_NAME, APP_DIR
+from cms import settings
+from cms.errors import UserNotLoggedIn
 import pathlib
 import hashlib
 

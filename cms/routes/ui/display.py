@@ -1,6 +1,5 @@
 from bottle import template, request
 from math import ceil
-import urllib
 
 
 class Tab:

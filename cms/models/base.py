@@ -1,10 +1,10 @@
-from ..db import db
+from cms.db import db
 
 from peewee import Model, IntegerField, TextField, CharField, OperationalError
 
-from ..models.utils import unsafe
+from cms.models.utils import unsafe
 from time import perf_counter as clock
-from .. import settings
+from cms import settings
 
 
 class BaseModel(Model):

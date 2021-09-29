@@ -7,9 +7,9 @@ from cms.models.models import (
     UserPermission,
 )
 from bottle import route, template, request
-from ..models import Blog, Post, User, db_context, Queue, Context
-from .ui import make_menu
-from .context import blog_context, user_context, bt_gen
+from cms.models import Blog, Post, User, db_context, Queue, Context
+from cms.routes.ui import make_menu
+from cms.routes.context import blog_context, user_context, bt_gen
 
 import datetime
 

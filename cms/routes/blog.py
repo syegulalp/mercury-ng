@@ -1,9 +1,8 @@
-from cms.models.models import PostIndex
-from re import L, search
-from bottle import route, template, request, redirect, HTTPResponse
+# from cms.models.models import PostIndex
+from bottle import route, template, request, redirect
 from playhouse.shortcuts import model_to_dict
 
-from ..models import (
+from cms.models import (
     Blog,
     Post,
     User,
@@ -13,16 +12,16 @@ from ..models import (
     UserPermission,
     Template,
 )
-from ..models.utils import fullpath
-from .ui import format_grid, make_menu, make_buttons, Button, Notice, Tab
-from .context import blog_context, user_context, bt_gen
-from .system import metadata_edit_, metadata_listing
+from cms.models.utils import fullpath
+from cms.routes.ui import format_grid, make_menu, make_buttons, Button, Notice, Tab
+from cms.routes.context import blog_context, user_context, bt_gen
+from cms.routes.system import metadata_edit_, metadata_listing
 
-from .post import file_upload_core
+from cms.routes.post import file_upload_core
 
 import pathlib
 from urllib.parse import urlparse, urlencode
-from ..settings import PRODUCT_NAME
+from cms.settings import PRODUCT_NAME
 import json
 import zipfile
 

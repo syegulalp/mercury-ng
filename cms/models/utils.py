@@ -12,7 +12,7 @@ DATE_FORMATS = (
 
 DATE_FORMAT = DATE_FORMATS[0]
 
-from ..settings import SALT
+from cms.settings import SALT
 
 import html
 import pathlib

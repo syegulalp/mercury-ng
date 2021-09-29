@@ -7,7 +7,7 @@ from cms.models.enums import (
 )
 
 from bottle import route, template, request, redirect
-from ..models import (
+from cms.models import (
     Blog,
     Post,
     User,
@@ -19,13 +19,14 @@ from ..models import (
     Category,
     UserPermission,
 )
-from .ui import make_menu, Notice, format_grid
-from .context import blog_context, user_context, post_context, bt_gen
-from ..models.utils import date_to_str, str_to_date, unsafe
-from ..settings import PRODUCT_VERSION
+from cms.routes.ui import make_menu, Notice, format_grid
+from cms.routes.context import blog_context, user_context, post_context, bt_gen
+from cms.models.utils import date_to_str, str_to_date, unsafe
+from cms.settings import PRODUCT_VERSION
 
 # TODO: all notices must have `unsafe`!
 # have an unsafe string renderer for objects
+# idea: accept an iterable, with unsafe() items
 
 import datetime
 import json

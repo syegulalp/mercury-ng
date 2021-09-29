@@ -1,10 +1,9 @@
-from cms.models.enums import QueueStatus, UserPermission
 from bottle import route, template
-from ..models import Blog, User, db_context, Queue
-from .ui import format_grid, make_menu, make_buttons, Notice, Button
-from .context import blog_context, user_context, bt_gen
-
-from ..settings import PRODUCT_NAME
+from cms.models.enums import UserPermission
+from cms.models import Blog, User, db_context, Queue
+from cms.routes.ui import format_grid, make_menu, make_buttons, Notice, Button
+from cms.routes.context import blog_context, user_context, bt_gen
+from cms.settings import PRODUCT_NAME
 import datetime
 
 

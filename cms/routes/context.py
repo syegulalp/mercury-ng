@@ -1,6 +1,6 @@
-from cms.models.models import Permission
+# from cms.models.models import Permission
 from bottle import template, request, redirect
-from cms.models import User, Blog, Template, Post, Metadata, db, System, UserPermission
+from cms.models import User, Blog, Template, Post, Metadata, System, UserPermission
 from cms import settings
 from cms.errors import UserNotLoggedIn, BlogPermissionError
 

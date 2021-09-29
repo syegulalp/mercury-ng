@@ -1,6 +1,5 @@
 # import cProfile, pstats
 
-import urllib
 from peewee import (
     IntegerField,
     TextField,
@@ -13,7 +12,8 @@ from peewee import (
 )
 
 from playhouse.sqlite_ext import RowIDField, SearchField, FTSModel
-from playhouse.shortcuts import model_to_dict
+
+# from playhouse.shortcuts import model_to_dict
 
 from bottle import SimpleTemplate
 
@@ -28,9 +28,9 @@ from .enums import (
     editor_button_colors,
     UserPermission,
 )
-from ..settings import APP_URL, APP_DIR
-from ..db import db
-from .utils import (
+from cms.settings import APP_URL, APP_DIR
+from cms.db import db
+from cms.models.utils import (
     create_basename,
     next_month,
     date_to_str,
@@ -38,10 +38,10 @@ from .utils import (
     previous_month,
     hash_password,
 )
-from ..errors import UserNotLoggedIn, MissingFileInfo
-from .. import settings
+from cms.errors import UserNotLoggedIn, MissingFileInfo
+from cms import settings
 
-from itertools import compress, product
+from itertools import product
 from time import sleep, perf_counter as clock
 
 import datetime
@@ -926,7 +926,7 @@ class Post(BaseModel):
     blog = ForeignKeyField(Blog, index=True,)
     author = ForeignKeyField(User, index=True)
     text = TextField(null=True)
-    #absolute_path = TextField(null=True)
+    # absolute_path = TextField(null=True)
     is_dirty = BooleanField(null=True)
     date_created = DateTimeField(default=datetime.datetime.utcnow, index=True)
     date_last_modified = DateTimeField(default=datetime.datetime.utcnow, index=True)

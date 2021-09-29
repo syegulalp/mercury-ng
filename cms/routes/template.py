@@ -1,6 +1,6 @@
 from cms.models.enums import TemplatePublishingMode, TemplateType, UserPermission
 from bottle import route, template, request, redirect
-from ..models import (
+from cms.models import (
     Blog,
     Template,
     User,
@@ -14,9 +14,9 @@ from ..models import (
     Theme,
     Context,
 )
-from .ui import format_grid, make_menu, make_buttons, Tab, Notice, Button
-from .context import blog_context, user_context, template_context, bt_gen
-from ..settings import PRODUCT_NAME, PRODUCT_VERSION
+from cms.routes.ui import format_grid, make_menu, make_buttons, Tab, Notice, Button
+from cms.routes.context import blog_context, user_context, template_context, bt_gen
+from cms.settings import PRODUCT_NAME, PRODUCT_VERSION
 
 import hashlib
 import json
