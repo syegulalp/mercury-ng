@@ -9,6 +9,7 @@ except ImportError:
 
     # Check if the settings directory even exists.
     # If not, create it and populate it.
+    # TODO: move this to a setup function somewhere
 
     DATA_PATH = pathlib.Path("data")
 
