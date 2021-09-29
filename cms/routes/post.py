@@ -1,8 +1,6 @@
 from cms.models.models import MediaAssociation
 from cms.models.enums import (
     PublicationStatus,
-    editor_actions,
-    editor_button_colors,
     Actions,
 )
 
