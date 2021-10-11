@@ -217,27 +217,27 @@ def save_post_(post: Post, blog: Blog, notice: Notice, save_action: str):
     new_primary_category = int(request.forms.primary_category)
     if post.primary_category.id != new_primary_category:
         categories_changed = True
-        new_category_obj = Category.get_by_id(new_primary_category)
-        post.set_primary_category(new_category_obj)
-        notice.ok(f"New primary category set: {new_category_obj.title}")
+        new_primary_category_obj = Category.get_by_id(new_primary_category)
+        post.set_primary_category(new_primary_category_obj)
+        notice.ok(f"New primary category set: {new_primary_category_obj.title}")
 
     form_subcategories = set(int(_) for _ in request.forms.getlist("subcategory"))
     post_subcategories = set(_.id for _ in post.subcategories)
     new_categories = form_subcategories.difference(post_subcategories)
 
-    for subcat in post.subcategories:
-        if subcat.id not in form_subcategories:
+    for subcategory in post.subcategories:
+        if subcategory.id not in form_subcategories:
             categories_changed = True
-            post.remove_subcategory(subcat)
-            notice.ok(f"Subcategory removed: {subcat.title}")
+            post.remove_subcategory(subcategory)
+            notice.ok(f"Subcategory removed: {subcategory.title}")
 
     if len(new_categories):
         categories_changed = True
-        for newcat in new_categories:
-            new_cat_obj = Category.get_by_id(newcat)
-            if new_cat_obj != post.primary_category:
-                post.add_subcategory(new_cat_obj)
-                notice.ok(f"Subcategory added: {new_cat_obj.title}")
+        for new_subcategory in new_categories:
+            new_subcategory_obj = Category.get_by_id(new_subcategory)
+            if new_subcategory_obj != post.primary_category:
+                post.add_subcategory(new_subcategory_obj)
+                notice.ok(f"Subcategory added: {new_subcategory_obj.title}")
 
     if original_title != post.title:
         title_changed = True
