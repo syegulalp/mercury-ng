@@ -66,7 +66,7 @@ class TemplateError(Exception):
     Exception used for errors in a CMS template.
     """
 
-    def __init__(self, message, tpl, lineno):
+    def __init__(self, message: str, tpl: "SpecialTemplate", lineno: int):
         self.tpl = tpl
         self.message = message
         self.lineno = lineno
@@ -92,7 +92,7 @@ class SpecialTemplate(SimpleTemplate):
 
     insert_re = re.compile(r"""^\s*?%\s*?insert\s*?\(['"](.*?)['"]\)""", re.MULTILINE)
 
-    def __init__(self, template, *a, **ka):
+    def __init__(self, template: "Template", *a, **ka):
         self.template_obj = template
         self.theme = self.template_obj.theme
 
@@ -245,13 +245,13 @@ class User(BaseModel):
     last_login = DateTimeField(null=True)
     logout_nonce = CharField(max_length=64, null=True, default=None)
 
-    def change_name(self, new_name):
+    def change_name(self, new_name: str):
         old_name = self.name
         self.name = new_name
         if new_name != old_name:
             self.save(basename=False)
 
-    def change_email(self, new_email):
+    def change_email(self, new_email: str):
         old_email = self.email
         self.email = new_email
         if new_email != old_email:
@@ -264,7 +264,7 @@ class User(BaseModel):
                     f"Email {new_email} already exists. User account emails must be unique."
                 )
 
-    def change_password(self, new_password):
+    def change_password(self, new_password: str):
         # TODO: password complexity
         old_password = self.password
         new_password = hash_password(str(new_password)).hex()
@@ -272,7 +272,7 @@ class User(BaseModel):
             self.password = new_password
             self.save(basename=False)
 
-    def add_permission(self, blog, permission: UserPermission):
+    def add_permission(self, blog: "Blog", permission: UserPermission):
         p, created = Permission.get_or_create(
             user=self, blog=blog, permission=permission
         )
@@ -280,7 +280,7 @@ class User(BaseModel):
             p.blog_id = 0
             p.save()
 
-    def remove_permission(self, blog, permission: UserPermission):
+    def remove_permission(self, blog: "Blog", permission: UserPermission):
         Permission.delete().where(
             Permission.user == self,
             Permission.blog == blog,
@@ -339,13 +339,13 @@ class User(BaseModel):
         return token.token
 
     @classmethod
-    def get_by_token(cls, token):
+    def get_by_token(cls, token: str):
         try:
             return LoginTokens.get(LoginTokens.token == token).user
         except LoginTokens.DoesNotExist:
             raise UserNotLoggedIn()
 
-    def clear_token(self, token):
+    def clear_token(self, token: str):
         t = self.tokens.where(LoginTokens.token == token).get()
         t.delete_instance()
 
@@ -453,7 +453,7 @@ class Theme(BaseModel):
                 template.delete_instance(recursive=True)
             self.delete_instance()
 
-    def make_instance(self, blog, title=None):
+    def make_instance(self, blog: "Blog", title=None):
         if title is None:
             title = f"{self.title} (for blog #{self.id})"
         theme_instance = Theme.create(
@@ -547,7 +547,7 @@ class Blog(BaseModel):
 
     # TODO: fts for media?
 
-    def media_search(self, query, source=None):
+    def media_search(self, query: str, source=None):
         if source is None:
             source = self.media
         return source.where(
@@ -558,7 +558,7 @@ class Blog(BaseModel):
             )
         ).order_by(Media.id.desc())
 
-    def search(self, query, source=None):
+    def search(self, query: str, source=None):
         if source is None:
             source = self.posts
         return source.where(
@@ -752,7 +752,7 @@ class Blog(BaseModel):
 
     # Utility methods
 
-    def create_category(self, title, description="", basename=None):
+    def create_category(self, title: str, description="", basename=None):
         new_category = Category.create(
             title=title, description=description, blog=self, basename=basename
         )
@@ -771,7 +771,7 @@ class Blog(BaseModel):
         new_category.basename = base
         new_category.save()
 
-    def add_tag(self, tag_title):
+    def add_tag(self, tag_title: str) -> "Tag":
         new_tag = Tag(title=tag_title, blog=self)
         new_tag.verify_basename()
         new_tag.save()
@@ -786,7 +786,7 @@ class Blog(BaseModel):
     def build_index_fileinfos(self):
         FileInfo.build_index_fileinfos_for_blog(self)
 
-    def apply_theme(self, theme):
+    def apply_theme(self, theme: "Theme"):
 
         with db.atomic():
             self.remove_theme()
