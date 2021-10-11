@@ -130,7 +130,7 @@ function savePost() {
         }
         popup = data[2];
         if (popup.length > 0) {
-            var win = window.open(popup, $('#post-basename').val());
+            var win = window.open(popup, $('#post_basename').val());
             win.focus();
         }
         queue_badge = data[4];
@@ -285,17 +285,17 @@ function initSidebarButtons() {
         $.post(
             'regen-basename', {
                 title: $('#post_title').val(),
-                basename: $('#post-basename').val()
+                basename: $('#post_basename').val()
             }
         ).done(function(data) {
             console.log(data);
-            $('#post-basename').val(data);
+            $('#post_basename').val(data);
             $('#regenerate_basename').hide();
         })
     })
 
-    $('#post-basename-addon').on("click", function() {
-        $('#post-basename').prop('disabled', false);
+    $('#post_basename_addon').on("click", function() {
+        $('#post_basename').prop('disabled', false);
         $('#regenerate_basename').show();
     })
 

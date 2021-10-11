@@ -58,12 +58,12 @@
 % end
 
 <div class="form-group">
-    <label for="post-basename">Basename:</label>
+    <label for="post_basename">Basename:</label>
     <div class="input-group input-group-sm mb-3">
-        <input type="text" class="form-control" id="post-basename" name="post-basename" value="{{post.basename}}"
+        <input type="text" class="form-control" id="post_basename" name="post_basename" value="{{post.basename}}"
             disabled>
-        <div class="input-group-append" title="Click to edit basename" id="post-basename-addon">
-            <a href="#" id="post-basename-addon" class="input-group-text" >🔒</a>
+        <div class="input-group-append" title="Click to edit basename" id="post_basename_addon">
+            <a href="#" id="post_basename_addon" class="input-group-text" >🔒</a>
         </div>
     </div>
     % if not is_new:
@@ -83,8 +83,8 @@ Note that any existing links to this page will break.">Regenerate basename</a>
 % end
 
 <div class="form-group">
-    <label for="post-permalink">{{link_label}}:</label>
-    <p><a class="break-anywhere" id="post-permalink" href="{{link_target}}" target="_blank">{{post.permalink}}</a>
+    <label for="post_permalink">{{link_label}}:</label>
+    <p><a class="break-anywhere" id="post_permalink" href="{{link_target}}" target="_blank">{{post.permalink}}</a>
     </p>
 </div>
 

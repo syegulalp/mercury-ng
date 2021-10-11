@@ -210,7 +210,7 @@ def save_post_(post: Post, blog: Blog, notice: Notice, save_action: str):
     post.date_published = str_to_date(request.forms.date_published)
     post.date_last_modified = datetime.datetime.utcnow()
 
-    _basename = request.forms.get("post-basename", None)
+    _basename = request.forms.get("post_basename", None)
     if _basename is not None:
         post.basename = _basename
 
