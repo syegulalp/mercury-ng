@@ -24,14 +24,14 @@ from email.message import EmailMessage
 unsafe = lambda x: html.escape(x, True)
 
 
-def fullpath(path_obj):
+def fullpath(path_obj: pathlib.Path) -> pathlib.Path:
     if path_obj.exists():
         return path_obj.resolve()
     else:
         return pathlib.Path(os.getcwd(), path_obj).resolve()
 
 
-def str_to_date(string: str):
+def str_to_date(string: str) -> str:
     for format in DATE_FORMATS:
         try:
             return datetime.datetime.strptime(string.strip(), format)
@@ -40,11 +40,11 @@ def str_to_date(string: str):
     raise ValueError(f"No valid time format found for {string}")
 
 
-def date_to_str(date_time):
-    return datetime.datetime.strftime(date_time, DATE_FORMAT)
+def date_to_str(dt: datetime.datetime) -> datetime.datetime:
+    return datetime.datetime.strftime(dt, DATE_FORMAT)
 
 
-def next_month(dt):
+def next_month(dt: datetime.datetime) -> datetime.datetime:
     year = dt.year
     month = dt.month + 1
     if month == 13:
@@ -53,7 +53,7 @@ def next_month(dt):
     return datetime.datetime(year=year, month=month, day=1)
 
 
-def previous_month(dt, last_day=True):
+def previous_month(dt: datetime.datetime, last_day=True) -> datetime.datetime:
     if last_day:
         return datetime.datetime(
             year=dt.year, month=dt.month, day=1
@@ -66,14 +66,14 @@ def previous_month(dt, last_day=True):
     return datetime.datetime(year=year, month=month, day=1)
 
 
-def remove_accents(input_str):
+def remove_accents(input_str: str) -> str:
     import unicodedata
 
     nfkd_form = unicodedata.normalize("NFKD", input_str)
     return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
 
-def create_basename(basename):
+def create_basename(basename: str) -> str:
 
     basename = remove_accents(basename)
 
@@ -94,7 +94,7 @@ def create_basename(basename):
     # TODO: enforce some maximum length limit? or should that be the responsibility of the caller?
 
 
-def hash_password(password):
+def hash_password(password: str) -> str:
     hashed_pwd = hashlib.pbkdf2_hmac("sha512", password.encode("utf-8"), SALT, 100000)
     return hashed_pwd
 
@@ -102,7 +102,7 @@ def hash_password(password):
 # def verify_password(password, hash):
 
 
-def send_email(results):
+def send_email(results: str):
 
     msg = EmailMessage()
     msg.set_content("\n".join(results))
