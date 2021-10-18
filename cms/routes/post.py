@@ -31,15 +31,6 @@ import json
 import pathlib
 import hashlib
 
-# REMAKE_FILEINFO_ACTIONS = (
-#     (PublicationStatus.DRAFT, Actions.Draft.SAVE_AND_SCHEDULE),
-#     (PublicationStatus.DRAFT, Actions.Draft.SAVE_AND_PUBLISH_NOW),
-#     (PublicationStatus.SCHEDULED, Actions.Scheduled.SAVE_DRAFT),
-#     (PublicationStatus.SCHEDULED, Actions.Scheduled.SAVE_AND_PUBLISH_NOW),
-#     (PublicationStatus.PUBLISHED, Actions.Published.SAVE_AND_UPDATE_LIVE),
-# )
-
-
 BLOG_SIDEBAR = {
     "Publishing": "post/publishing",
     "Post Status": "post/status",
@@ -258,9 +249,6 @@ def save_post_(post: Post, blog: Blog, notice: Notice, save_action: str):
 
     if basename_changed or date_changed or categories_changed or otherwise_dirty:
         remake_fileinfo = True
-
-    # if (post.status, save_action) in REMAKE_FILEINFO_ACTIONS:
-    #     remake_fileinfo = True
 
     if remake_fileinfo:
         # This is to queue the post's OLD neighbors
@@ -518,8 +506,6 @@ def file_upload_core(user, blog: Blog, post=None):
         if not initial_save_path.exists():
             initial_save_path.mkdir(parents=True)
 
-        # print("Save path", initial_save_path)
-
         uploaded_filename, file_extension = f.filename.rsplit(".", 1)
 
         delimeter = 0
@@ -539,8 +525,6 @@ def file_upload_core(user, blog: Blog, post=None):
                 break
 
         final_save_path = pathlib.Path(initial_save_path, final_filename)
-
-        # print("Final path", final_save_path)
 
         f.save(str(final_save_path))
 
