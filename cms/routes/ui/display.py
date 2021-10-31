@@ -7,6 +7,7 @@ class Tab:
         self.title = title
         self.link = link
 
+# TODO: search query should be made part of filter: options, not a standalone item
 
 def format_grid(
     listing, buttons="", search_query=None, sort_model=None, listing_fmt={}
