@@ -37,6 +37,7 @@ from cms.models.utils import (
     unsafe,
     previous_month,
     hash_password,
+    tagstrip
 )
 from cms.errors import UserNotLoggedIn, MissingFileInfo
 from cms import settings
@@ -1181,7 +1182,7 @@ class Post(BaseModel):
         return (
             f'<a class="font-weight-bold" href="{self.manage_link}">{unsafe(self.title)}</a>'
             if self.title
-            else f'<a class="text-muted font-weight-bold" href="{self.manage_link}">[<i>Untitled</i>]</a>'
+            else f'<a class="text-muted font-weight-bold" href="{self.manage_link}">[<i>Untitled</i>]</a><br><small>{tagstrip(self.text[:50])}...</small>'
         )
 
     # TODO: move this to Blog
