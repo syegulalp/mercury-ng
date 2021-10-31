@@ -588,16 +588,6 @@ class Blog(BaseModel):
         return Post.select().where(Post.blog == self)
 
     @property
-    def posts_for_view(self):
-        User1 = User.alias("user1")
-        return (
-            self.posts.select(Post, User, User1)
-            .join(User, on=Post.author)
-            .switch(Post)
-            .join(User1, JOIN.LEFT_OUTER, on=Post.open_for_editing_by)
-        )
-
-    @property
     def published_posts(self):
         return self.posts.where(Post.status == PublicationStatus.PUBLISHED)
 
