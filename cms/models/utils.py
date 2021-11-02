@@ -119,11 +119,13 @@ def send_email(results: str):
     except Exception as e:
         print("Email error: ", e, file=sys.stderr)
 
+
 strip = re.compile("<[^>]*>")
+
 
 def tagstrip(input: str):
     output = input
     for f in strip.finditer(input):
-        output = output.replace(f[0],"")
+        output = output.replace(f[0], "")
     output = output.lstrip()
     return output

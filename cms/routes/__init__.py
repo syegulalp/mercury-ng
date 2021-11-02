@@ -9,7 +9,7 @@ def error500(error):
     if isinstance(error.exception, BlogPermissionError):
         return "You don't have permission to access that resource"
     elif isinstance(error, HTTPError):
-        return f"<pre>{unsafe(str(error.traceback))}</pre>"    
+        return f"<pre>{unsafe(str(error.traceback))}</pre>"
     return f"<pre>{unsafe(str(error))}</pre>"
 
 

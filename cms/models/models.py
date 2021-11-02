@@ -37,7 +37,7 @@ from cms.models.utils import (
     unsafe,
     previous_month,
     hash_password,
-    tagstrip
+    tagstrip,
 )
 from cms.errors import UserNotLoggedIn, MissingFileInfo
 from cms import settings
