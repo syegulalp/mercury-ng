@@ -6,7 +6,8 @@ from cms.models.utils import unsafe
 from time import perf_counter as clock
 from cms import settings
 
-class MetadataModel():
+
+class MetadataModel:
     def get_metadata(self, key=None, obj_name=None, obj_id=None):
         if not obj_name:
             obj_name = self._meta.table_name
@@ -92,8 +93,6 @@ class BaseModel(Model, MetadataModel):
 
     def set_legacy(self, value):
         BaseModel.legacy_values[(self._meta.table_name, value)] = self.id
-
-    
 
 
 class OtherModel:

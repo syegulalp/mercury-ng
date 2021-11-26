@@ -2755,6 +2755,7 @@ class _System(MetadataModel):
             f'<span id="queue-badge" class="badge badge-{style}">{queue_count}</span>'
         )
 
+
 System = _System()
 
 Blog.sorting = {

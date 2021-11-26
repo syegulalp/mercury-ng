@@ -16,7 +16,7 @@ from cms.models import (
     Tag,
     Category,
     UserPermission,
-    System
+    System,
 )
 from cms.routes.ui import make_menu, Notice, format_grid
 from cms.routes.context import blog_context, user_context, post_context, bt_gen
@@ -62,8 +62,10 @@ POST_EDIT_FOOTER = """
 <script src="/static/js/editor.js?{PRODUCT_VERSION}"></script>
 """
 
+
 def editor_css():
     return System.get_metadata("theme").value or ""
+
 
 @route("/blog/<blog_id:int>/new-post", method=("GET",))
 @db_context
@@ -87,7 +89,8 @@ def new_post(user: User, blog: Blog):
         page_title=f"New post in {bt_gen(blog)}",
         post=post,
         blog=blog,
-        post_footer=script+POST_EDIT_FOOTER.format(post=post, PRODUCT_VERSION=PRODUCT_VERSION),
+        post_footer=script
+        + POST_EDIT_FOOTER.format(post=post, PRODUCT_VERSION=PRODUCT_VERSION),
     )
 
 
@@ -167,8 +170,6 @@ def edit_post(user: User, post: Post):
 
     if post.excerpt_ is None:
         post.excerpt_ = ""
-
-    
 
     script = f"""<script>
 var upload_path = "{post.upload_link}";
