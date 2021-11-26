@@ -65,7 +65,7 @@ function initEditor() {
         browser_spellcheck: true,
         menubar: false,
         convert_urls: false,
-        content_css: `${blogPermalink}/_static/css/editor.css`,
+        content_css: `${alt_editor_css}${blogPermalink}/_static/css/editor.css`,
         entity_encoding: 'raw',
         pagebreak_separator: "<!-- pagebreak -->",
         height: getEditorHeight(),

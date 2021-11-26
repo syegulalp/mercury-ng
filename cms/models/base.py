@@ -6,8 +6,49 @@ from cms.models.utils import unsafe
 from time import perf_counter as clock
 from cms import settings
 
+class MetadataModel():
+    def get_metadata(self, key=None, obj_name=None, obj_id=None):
+        if not obj_name:
+            obj_name = self._meta.table_name
+        if not obj_id:
+            obj_id = self.id
+        try:
+            get_key = Metadata.select().where(
+                Metadata.object_name == obj_name, Metadata.object_id == obj_id,
+            )
+            if key:
+                get_key = get_key.where(Metadata.key == key).get()
 
-class BaseModel(Model):
+        except Exception as e:
+            return None
+        else:
+            return get_key
+
+    def set_metadata(self, key, value):
+        key_value = self.get_metadata(key)
+        if key_value is None:
+            key_value = Metadata(
+                object_name=self._meta.table_name,
+                object_id=self.id,
+                key=key,
+                value=value,
+            )
+        key_value.value = value
+        key_value.save()
+
+    def del_metadata(self, key):
+        key_value = self.get_metadata(key)
+        if key_value is not None:
+            Metadata.get(id=key_value.id).delete_instance()
+
+    def delete_instance(self, *a, **ka):
+        Metadata.delete().where(
+            Metadata.object_name == self._meta.table_name, Metadata.object_id == self.id
+        ).execute()
+        super().delete_instance(*a, **ka)
+
+
+class BaseModel(Model, MetadataModel):
     class Meta:
         database = db
 
@@ -52,45 +93,7 @@ class BaseModel(Model):
     def set_legacy(self, value):
         BaseModel.legacy_values[(self._meta.table_name, value)] = self.id
 
-    def get_metadata(self, key=None, obj_name=None, obj_id=None):
-        if not obj_name:
-            obj_name = self._meta.table_name
-        if not obj_id:
-            obj_id = self.id
-        try:
-            get_key = Metadata.select().where(
-                Metadata.object_name == obj_name, Metadata.object_id == obj_id,
-            )
-            if key:
-                get_key = get_key.where(Metadata.key == key).get()
-
-        except Exception as e:
-            return None
-        else:
-            return get_key
-
-    def set_metadata(self, key, value):
-        key_value = self.get_metadata(key)
-        if key_value is None:
-            key_value = Metadata(
-                object_name=self._meta.table_name,
-                object_id=self.id,
-                key=key,
-                value=value,
-            )
-        key_value.value = value
-        key_value.save()
-
-    def del_metadata(self, key):
-        key_value = self.get_metadata(key)
-        if key_value is not None:
-            Metadata.get(id=key_value.id).delete_instance()
-
-    def delete_instance(self, *a, **ka):
-        Metadata.delete().where(
-            Metadata.object_name == self._meta.table_name, Metadata.object_id == self.id
-        ).execute()
-        super().delete_instance(*a, **ka)
+    
 
 
 class OtherModel:

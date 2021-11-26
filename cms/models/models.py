@@ -17,7 +17,7 @@ from playhouse.sqlite_ext import RowIDField, SearchField, FTSModel
 
 from bottle import SimpleTemplate
 
-from .base import BaseModel, OtherModel, db_context, Metadata
+from .base import BaseModel, OtherModel, db_context, Metadata, MetadataModel
 
 from .enums import (
     PublicationStatus,
@@ -2735,7 +2735,10 @@ class ArchiveContext:
         return m2
 
 
-class System:
+class _System(MetadataModel):
+    class _meta:
+        table_name = "_system"
+
     id = 0
     title = "System"
     permalink = "/"
@@ -2752,12 +2755,7 @@ class System:
             f'<span id="queue-badge" class="badge badge-{style}">{queue_count}</span>'
         )
 
-
-Post.add_index(
-    SQL(
-        """CREATE INDEX "post_date_published_desc" ON "post" ("date_published" DESC);"""
-    )
-)
+System = _System()
 
 Blog.sorting = {
     "status": {"asc": Post.status, "desc": Post.status.desc(),},

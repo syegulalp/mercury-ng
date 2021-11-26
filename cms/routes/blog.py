@@ -45,7 +45,7 @@ def close_search(link):
 @user_context(UserPermission.AUTHOR)
 def blogs_menu(user: User, blog: Blog, search_term=None):
 
-    posts = blog.order_by(Post.date_published.desc())
+    posts = blog.posts.order_by(Post.date_published.desc())
 
     if search_term is not None:
         posts = blog.search(search_term, posts)
