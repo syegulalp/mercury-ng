@@ -31,6 +31,12 @@
         <small id="category_basename_help" class="form-text text-muted">Basename created for this category. This must be unique across this blog.<br>A basename can also be a path, e.g. <code>writing/mybooks</code>, again as long as it's unique to this blog.</small>
     </div>
 
+    <span class="float-right">
+        <a href="{{category.delete_link}}">
+            <button type="button" class="btn btn-danger">Delete this category</button>
+        </a>
+    </span>
+
     <button type="submit" class="btn btn-success" name="save">Save changes</button>
 
 </form>

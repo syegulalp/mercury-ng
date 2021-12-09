@@ -11,7 +11,9 @@ from cms.models import (
     Tag,
     UserPermission,
     Template,
+    db
 )
+from cms.models.models import PostCategory
 from cms.models.utils import create_basename, fullpath
 from cms.routes.ui import format_grid, make_menu, make_buttons, Button, Notice, Tab
 from cms.routes.context import blog_context, user_context, bt_gen
@@ -24,6 +26,7 @@ from urllib.parse import urlparse, urlencode
 from cms.settings import PRODUCT_NAME
 import json
 import zipfile
+import hashlib
 
 SETTINGS_TABS = {
     "": Tab("Name/Description", "/blog/{tabitem.id}/settings"),
@@ -186,6 +189,11 @@ def new_blog_category(blog_id: int):
     return result
 
 
+# I still haven't figured out why we need to return the DB instance object
+# in order for it to survive the @db_context mgr
+# fortunately the workaround is not difficult
+
+
 @db_context
 @blog_context
 @user_context(UserPermission.DESIGNER)
@@ -234,6 +242,8 @@ def new_blog_category_core(user: User, blog: Blog):
         notice=notice,
     )
 
+# TODO: actual editing for categories
+# some way to stage/confirm changes
 
 @route("/blog/<blog_id:int>/category/<category_id:int>/edit", method=("GET", "POST"))
 @db_context
@@ -251,6 +261,99 @@ def blog_category_edit(user: User, blog: Blog, category_id: int):
         blog=blog,
         page_title=f"Category {category.title} / {bt_gen(blog)})",
     )
+
+
+@route("/blog/<blog_id:int>/category/<category_id:int>/delete", method=("GET", "POST"))
+@db_context
+@blog_context
+@user_context(UserPermission.DESIGNER)
+def blog_category_delete(user: User, blog: Blog, category_id: int):
+
+    category: Category
+    category = Category.get_by_id(category_id)
+    notice = Notice()
+    action_key = hashlib.sha256(
+        category.title.encode("utf-8") + str(user.id).encode("utf-8")
+    ).hexdigest()
+
+    c_id = request.query.get("c",0)
+    
+    primary_cat_pages_ = Post.select().where(Post.primary_category == category)
+    secondary_cat_pages_ = PostCategory.select().where(PostCategory.category == category)    
+
+    text = template(
+        "include/category-delete.tpl",
+        category=category,
+        categories=blog.categories.where(Category.id != category.id)
+        .order_by(Category.title.asc()),
+        action_key=action_key,
+        c_id = int(c_id)
+    )
+   
+    if request.method == "POST":
+
+        confirm_key = request.forms.action_key
+        if not confirm_key:
+            notice.fail("No delete key provided")
+        if action_key != confirm_key:
+            notice.fail("No delete key provided")
+
+        if notice.is_ok():
+            new_category_id = request.forms.new_category
+            new_category = Category.get_by_id(new_category_id)
+            
+            p:Post
+            pp:PostCategory
+
+            partial = True if request.forms.save2 else False
+
+            if partial:
+                primary_cat_pages = primary_cat_pages_.limit(25)
+                secondary_cat_pages = secondary_cat_pages_.limit(25)
+
+            for p in primary_cat_pages.iterator():
+                p.enqueue()
+                p.dequeue_post_archives()
+                p.queue_erase_post_archive_files()
+                p.set_primary_category(new_category)
+                p.enqueue()
+            
+            for pp in secondary_cat_pages.iterator():
+                p = pp.post
+                p.enqueue()
+                p.dequeue_post_archives()
+                p.queue_erase_post_archive_files()
+                p.remove_subcategory(category)
+                p.add_subcategory(new_category)
+                p.enqueue()
+
+            text = f"Category {category.title} deleted and all posts reparented to {new_category.title}. All affected pages pushed to publishing."
+            
+            if not partial:
+                category.delete_instance()
+            else:
+                p_count = primary_cat_pages_.count()
+                s_count = secondary_cat_pages_.count()
+                if p_count == s_count == 0:
+                    category.delete_instance()
+                else:
+                    text = f'Posts reparented from {category.title} to {new_category.title}. <a href="{category.delete_link}?c={new_category.id}">{p_count+s_count} posts left.</a>'
+
+
+    return template(
+        "default.tpl",
+        text=text,
+        menu=make_menu("blog_category", category),
+        blog=blog,
+        page_title=f"Delete category {category.title} / {bt_gen(blog)})",
+    )
+
+
+# delete category:
+# choose a category to reparent
+# update primary/secondary categories
+# confirm action
+# queue each affected page to be republished
 
 
 @route("/blog/<blog_id:int>/category/<category_id:int>/posts")

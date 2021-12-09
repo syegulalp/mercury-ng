@@ -879,6 +879,10 @@ class Category(BaseModel):
         return f"{self.manage_link}/edit"
 
     @property
+    def delete_link(self):
+        return f"{self.manage_link}/delete"
+
+    @property
     def permalink(self):
         # TODO: eventually this will be derived from the default category mapping
         return f"{self.blog.permalink}/{self.basename}"
@@ -1399,7 +1403,12 @@ class Post(BaseModel):
         primary.save()
 
     def add_subcategory(self, subcategory: Category):
-        PostCategory.create(post=self, category=subcategory)
+        try:
+            cat_to_add = PostCategory.get(post=self, category=subcategory)
+        except PostCategory.DoesNotExist:
+            PostCategory.create(post=self, category=subcategory)
+        else:
+            pass
 
     def remove_subcategory(self, subcategory: Category):
         try:
