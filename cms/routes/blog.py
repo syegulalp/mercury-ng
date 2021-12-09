@@ -253,7 +253,48 @@ def new_blog_category_core(user: User, blog: Blog):
 @blog_context
 @user_context(UserPermission.DESIGNER)
 def blog_category_edit(user: User, blog: Blog, category_id: int):
-    category = Category.get_by_id(category_id)
+    category: Category = Category.get_by_id(category_id)
+    notice = Notice()
+
+    if request.method == "POST":
+
+        new_category_title = request.forms["category_title"]
+        new_category_description = request.forms["category_description"]
+        new_category_basename = request.forms["category_basename"]
+
+        if not new_category_title:
+            notice.fail("You must supply a category title")
+        else:
+            category.title = new_category_title
+
+        if not new_category_basename:
+            notice.fail("You must supply a category basename")
+        else:
+            parts = []
+            for part in new_category_basename.split("/"):
+                parts.append(create_basename(part))
+            new_category_basename = "/".join(parts)
+            if (
+                Category.select()
+                .where(
+                    (Category.basename == new_category_basename)
+                    & (Category.id != category.id)
+                )
+                .count()
+                > 0
+            ):
+                notice.fail(
+                    "At least one other category shares the selected basename. Choose another basename."
+                )
+
+        if new_category_description:
+            category.description = new_category_description
+
+        if notice.is_ok():
+            category.save()
+            notice.ok(
+                f'Changes saved. You must <a href="{blog.republish_link}">republish your blog</a> to make these changes take affect.'
+            )
 
     text = template("include/category.tpl", category=category)
 
@@ -263,6 +304,7 @@ def blog_category_edit(user: User, blog: Blog, category_id: int):
         menu=make_menu("blog_category_edit", category),
         blog=blog,
         page_title=f"Category {category.title} / {bt_gen(blog)})",
+        notice=notice,
     )
 
 

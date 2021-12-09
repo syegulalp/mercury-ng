@@ -666,6 +666,10 @@ class Blog(BaseModel):
         return f"{self.base_link}/{self.id}"
 
     @property
+    def republish_link(self):
+        return f"{self.manage_link}/republish"
+
+    @property
     def create_post_link(self):
         return f"{self.manage_link}/new-post"
 

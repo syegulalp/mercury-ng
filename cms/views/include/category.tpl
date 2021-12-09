@@ -1,9 +1,3 @@
-% if category.id:
-<div class="alert alert-warning">
-    Changing any of these fields will require your blog to be republished.
-</div>
-% end
-
 <form method="post">
 
     % if category.id:
@@ -30,6 +24,12 @@
             value="{{category.basename}}">
         <small id="category_basename_help" class="form-text text-muted">Basename created for this category. This must be unique across this blog.<br>A basename can also be a path, e.g. <code>writing/mybooks</code>, again as long as it's unique to this blog.</small>
     </div>
+
+% if category.id:
+<div class="alert alert-warning">
+    Changing any of these fields will require your blog to be republished. Don't make any changes on this page unless you're prepared to do that.
+</div>
+% end    
 
     <span class="float-right">
         <a href="{{category.delete_link}}">
