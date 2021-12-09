@@ -140,11 +140,24 @@ menus = {
         "parent_context": lambda x: x,
     },    
     "blog_category": {
-        "type": "text",
+        "type": "label",
         "text": lambda x: unsafe(x.title),
+        "path": lambda x: x.edit_link,
         "parent": "blog_categories",
         "parent_context": lambda x: x.blog,
     },
+    "blog_category_edit": {
+        "type": "text",
+        "text": lambda x: "Edit",
+        "parent": "blog_category",
+        "parent_context": lambda x: x,
+    },
+    "blog_category_delete": {
+        "type": "text",
+        "text": lambda x: "Delete",
+        "parent": "blog_category",
+        "parent_context": lambda x: x,
+    },    
     "blog_category_in_posts": {
         "type": "text",
         "text": lambda x: f"Posts for category {x.title}",

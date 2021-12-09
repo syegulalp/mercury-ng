@@ -10,7 +10,7 @@
         </select>
     </div>
 
-    <p><button type="submit" class="btn btn-success" name="save2" value="save2">Delete category and move posts (batch of 25, to avoid timeout)</button></p>
-    <p><button type="submit" class="btn btn-primary" name="save">Delete category and move all posts (long operation, may timeout)</button></p>
+    <p><button type="submit" class="btn btn-success" name="save2" value="save2">Move posts (batch of 25, to avoid timeout); delete category when no posts left</button></p>
+    <p><button type="submit" class="btn btn-danger" name="save">Move all posts at once and delete category (long operation, may timeout)</button></p>
     
 </form>

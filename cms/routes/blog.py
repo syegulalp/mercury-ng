@@ -257,7 +257,7 @@ def blog_category_edit(user: User, blog: Blog, category_id: int):
     return template(
         "default.tpl",
         text=text,
-        menu=make_menu("blog_category", category),
+        menu=make_menu("blog_category_edit", category),
         blog=blog,
         page_title=f"Category {category.title} / {bt_gen(blog)})",
     )
@@ -343,7 +343,7 @@ def blog_category_delete(user: User, blog: Blog, category_id: int):
     return template(
         "default.tpl",
         text=text,
-        menu=make_menu("blog_category", category),
+        menu=make_menu("blog_category_delete", category),
         blog=blog,
         page_title=f"Delete category {category.title} / {bt_gen(blog)})",
     )
