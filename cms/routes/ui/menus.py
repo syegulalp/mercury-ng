@@ -133,6 +133,12 @@ menus = {
         "parent": "blog_menu",
         "parent_context": lambda x: x,
     },
+    "new_blog_category": {
+        "type": "text",
+        "text": lambda x: f"New category for blog #{x.id}",
+        "parent": "blog_categories",
+        "parent_context": lambda x: x,
+    },    
     "blog_category": {
         "type": "text",
         "text": lambda x: unsafe(x.title),

@@ -1,10 +1,14 @@
+% if category.id:
 <div class="alert alert-warning">
     Changing any of these fields will require your blog to be republished.
 </div>
+% end
 
 <form method="post">
 
+    % if category.id:
     <p><a class="btn btn-primary" role="button" href="{{category.in_posts_link}}">See all posts in this category</a></p>
+    % end
 
     <div class="form-group">
         <label for="category_title">Category title</label>

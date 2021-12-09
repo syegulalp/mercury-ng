@@ -12,7 +12,7 @@ from cms.models import (
     UserPermission,
     Template,
 )
-from cms.models.utils import fullpath
+from cms.models.utils import create_basename, fullpath
 from cms.routes.ui import format_grid, make_menu, make_buttons, Button, Notice, Tab
 from cms.routes.context import blog_context, user_context, bt_gen
 from cms.routes.system import metadata_edit_, metadata_listing
@@ -178,10 +178,67 @@ def blog_categories(user: User, blog: Blog):
     )
 
 
+@route("/blog/<blog_id:int>/new-category", method=("GET", "POST"))
+def new_blog_category(blog_id: int):
+    result = new_blog_category_core(blog_id)
+    if isinstance(result, Category):
+        return redirect(result.edit_link)
+    return result
+
+
+@db_context
+@blog_context
+@user_context(UserPermission.DESIGNER)
+def new_blog_category_core(user: User, blog: Blog):
+
+    notice = Notice()
+    category = Category(blog=blog)
+
+    if request.method == "POST":
+
+        category_title = request.forms["category_title"]
+        category_description = request.forms["category_description"]
+        category_basename = request.forms["category_basename"]
+
+        if not category_title:
+            notice.fail("You must supply a category title")
+
+        if not category_basename:
+            notice.fail("You must supply a category basename")
+        else:
+            parts = []
+            for part in category_basename.split("/"):
+                parts.append(create_basename(part))
+            category_basename = "/".join(parts)
+
+        category = Category(
+            title=category_title,
+            description=category_description,
+            basename=category_basename,
+            blog=blog,
+            default=False,
+        )
+
+        if notice.is_ok():
+            category.save()
+            return category
+
+    text = template("include/category.tpl", category=category)
+
+    return template(
+        "default.tpl",
+        text=text,
+        menu=make_menu("new_blog_category", blog),
+        blog=blog,
+        page_title=f"New category / {bt_gen(blog)})",
+        notice=notice,
+    )
+
+
 @route("/blog/<blog_id:int>/category/<category_id:int>/edit", method=("GET", "POST"))
 @db_context
 @blog_context
-@user_context(UserPermission.AUTHOR)
+@user_context(UserPermission.DESIGNER)
 def blog_category_edit(user: User, blog: Blog, category_id: int):
     category = Category.get_by_id(category_id)
 
