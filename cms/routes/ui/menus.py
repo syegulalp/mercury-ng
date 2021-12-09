@@ -138,7 +138,7 @@ menus = {
         "text": lambda x: f"New category for blog #{x.id}",
         "parent": "blog_categories",
         "parent_context": lambda x: x,
-    },    
+    },
     "blog_category": {
         "type": "label",
         "text": lambda x: unsafe(x.title),
@@ -157,7 +157,7 @@ menus = {
         "text": lambda x: "Delete",
         "parent": "blog_category",
         "parent_context": lambda x: x,
-    },    
+    },
     "blog_category_in_posts": {
         "type": "text",
         "text": lambda x: f"Posts for category {x.title}",

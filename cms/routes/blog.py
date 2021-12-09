@@ -11,7 +11,7 @@ from cms.models import (
     Tag,
     UserPermission,
     Template,
-    db
+    db,
 )
 from cms.models.models import PostCategory
 from cms.models.utils import create_basename, fullpath
@@ -242,8 +242,11 @@ def new_blog_category_core(user: User, blog: Blog):
         notice=notice,
     )
 
+
 # TODO: actual editing for categories
-# some way to stage/confirm changes
+# some way to stage/confirm changes?
+# same as below, do it in passes in /edit/apply or sth
+
 
 @route("/blog/<blog_id:int>/category/<category_id:int>/edit", method=("GET", "POST"))
 @db_context
@@ -276,20 +279,23 @@ def blog_category_delete(user: User, blog: Blog, category_id: int):
         category.title.encode("utf-8") + str(user.id).encode("utf-8")
     ).hexdigest()
 
-    c_id = request.query.get("c",0)
-    
+    c_id = request.query.get("c", 0)
+
     primary_cat_pages_ = Post.select().where(Post.primary_category == category)
-    secondary_cat_pages_ = PostCategory.select().where(PostCategory.category == category)    
+    secondary_cat_pages_ = PostCategory.select().where(
+        PostCategory.category == category
+    )
 
     text = template(
         "include/category-delete.tpl",
         category=category,
-        categories=blog.categories.where(Category.id != category.id)
-        .order_by(Category.title.asc()),
+        categories=blog.categories.where(Category.id != category.id).order_by(
+            Category.title.asc()
+        ),
         action_key=action_key,
-        c_id = int(c_id)
+        c_id=int(c_id),
     )
-   
+
     if request.method == "POST":
 
         confirm_key = request.forms.action_key
@@ -301,9 +307,9 @@ def blog_category_delete(user: User, blog: Blog, category_id: int):
         if notice.is_ok():
             new_category_id = request.forms.new_category
             new_category = Category.get_by_id(new_category_id)
-            
-            p:Post
-            pp:PostCategory
+
+            p: Post
+            pp: PostCategory
 
             partial = True if request.forms.save2 else False
 
@@ -317,7 +323,7 @@ def blog_category_delete(user: User, blog: Blog, category_id: int):
                 p.queue_erase_post_archive_files()
                 p.set_primary_category(new_category)
                 p.enqueue()
-            
+
             for pp in secondary_cat_pages.iterator():
                 p = pp.post
                 p.enqueue()
@@ -328,7 +334,7 @@ def blog_category_delete(user: User, blog: Blog, category_id: int):
                 p.enqueue()
 
             text = f"Category {category.title} deleted and all posts reparented to {new_category.title}. All affected pages pushed to publishing."
-            
+
             if not partial:
                 category.delete_instance()
             else:
@@ -339,7 +345,6 @@ def blog_category_delete(user: User, blog: Blog, category_id: int):
                 else:
                     text = f'Posts reparented from {category.title} to {new_category.title}. <a href="{category.delete_link}?c={new_category.id}">{p_count+s_count} posts left.</a>'
 
-
     return template(
         "default.tpl",
         text=text,
@@ -347,13 +352,6 @@ def blog_category_delete(user: User, blog: Blog, category_id: int):
         blog=blog,
         page_title=f"Delete category {category.title} / {bt_gen(blog)})",
     )
-
-
-# delete category:
-# choose a category to reparent
-# update primary/secondary categories
-# confirm action
-# queue each affected page to be republished
 
 
 @route("/blog/<blog_id:int>/category/<category_id:int>/posts")
