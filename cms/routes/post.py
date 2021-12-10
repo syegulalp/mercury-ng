@@ -262,7 +262,7 @@ def save_post_(post: Post, blog: Blog, notice: Notice, save_action: str):
     if remake_fileinfo:
         # This is to queue the post's OLD neighbors
         if post.status == PublicationStatus.PUBLISHED:
-            post.enqueue()
+            post.enqueue(indices=False)
             post.dequeue_post_archives()
             post.queue_erase_post_archive_files()
 
