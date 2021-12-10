@@ -375,32 +375,34 @@ def blog_category_delete(user: User, blog: Blog, category_id: int):
                 secondary_cat_pages = secondary_cat_pages_.limit(25)
 
             for p in primary_cat_pages.iterator():
-                p.enqueue()
+                p.enqueue(indices=False)
                 p.dequeue_post_archives()
                 p.queue_erase_post_archive_files()
                 p.set_primary_category(new_category)
-                p.enqueue()
+                p.enqueue(indices=False)
 
             for pp in secondary_cat_pages.iterator():
                 p = pp.post
-                p.enqueue()
+                p.enqueue(indices=False)
                 p.dequeue_post_archives()
                 p.queue_erase_post_archive_files()
                 p.remove_subcategory(category)
                 p.add_subcategory(new_category)
-                p.enqueue()
+                p.enqueue(indices=False)
 
-            text = f"Category {category.title_for_unsafe_display} deleted and all posts reparented to {new_category.title_for_unsafe_display}. All affected pages pushed to publishing."
+            text = f"Category {category.title_for_display} deleted and all posts reparented to {new_category.title_for_display}. All affected pages pushed to publishing."
 
             if not partial:
+                blog.queue_indexes()
                 category.delete_instance()
             else:
                 p_count = primary_cat_pages_.count()
                 s_count = secondary_cat_pages_.count()
                 if p_count == s_count == 0:
+                    blog.queue_indexes()
                     category.delete_instance()
                 else:
-                    text = f'Posts reparented from {category.title_for_unsafe_display} to {new_category.title_for_unsafe_display}. <a href="{category.delete_link}?c={new_category.id}">{p_count+s_count} posts left.</a>'
+                    text = f'Posts reparented from {category.title_for_display} to {new_category.title_for_display}. <a href="{category.delete_link}?c={new_category.id}">{p_count+s_count} posts left.</a>'
 
     return template(
         "default.tpl",
@@ -591,16 +593,16 @@ def merge_tag(user: User, blog: Blog, tag_id: int):
     
     if request.method == "POST":
 
-        new_tag_title = request.forms.tag_title
+        new_tag.title = request.forms.get("tag_title","")
 
         target_tags = (
-            Tag.select().where(Tag.title == new_tag_title, Tag.blog == blog).limit(1)
+            Tag.select().where(Tag.title == new_tag.title, Tag.blog == blog).limit(1)
         )
 
         if not target_tags.count():
             notice.fail("No tag with that name exists in this blog. Choose an existing tag.")
-
-        new_tag = target_tags.get()
+        else:
+            new_tag = target_tags.get()
 
         if request.forms.get("save"):
 
@@ -608,25 +610,27 @@ def merge_tag(user: User, blog: Blog, tag_id: int):
             for post in old_tag.posts.limit(25):
                 post.remove_tag(old_tag)
                 post.add_tag(new_tag)
-                post.enqueue()
+                post.enqueue(indices=False)
 
             t_count = old_tag.posts.count()
             
             if t_count:
 
                 notice.ok(
-                    f'25 instance of tag {old_tag.title_for_unsafe_display} merged with tag {new_tag.title_for_unsafe_display}. {t_count} remaining.'
+                    f'25 instance of tag {old_tag.title_for_display} merged with tag {new_tag.title_for_display}. {t_count} remaining.'
                 )
 
             else:
 
+                blog.queue_indexes()
+
                 notice.ok(
-                    f'Tag {old_tag.title_for_unsafe_display} merged with tag {new_tag.title_for_unsafe_display}. All affected pages have been enqueued.'
+                    f'Tag {old_tag.title_for_display} merged with tag {new_tag.title_for_display}. All affected pages have been enqueued.'
                 )
 
         elif request.forms.get("verify"):
             if notice.is_ok():
-                notice.ok(f'Target tag {new_tag.title_for_unsafe_display} is valid. Click "Merge tags" to start merging.')
+                notice.ok(f'Target tag {new_tag.title_for_display} is valid. Click "Merge tags" to start merging.')
 
     text = template("include/tag-merge.tpl", old_tag=old_tag, new_tag = new_tag)
     
@@ -658,7 +662,7 @@ def delete_tag(user: User, blog: Blog, tag_id: int):
         if tag.posts.count():
             notice.notice('Deleting tags still attached to existing posts is not recommended. We recommend <a href="{tag.merge_link}">merging this tag with another tag first.</a>')
         notice.warning(
-            f"Are you sure you want to delete tag {tag.title_for_unsafe_display}?",
+            f"Are you sure you want to delete tag {tag.title_for_display}?",
             "delete",
             confirmation,
             tag.manage_link,
@@ -673,7 +677,7 @@ def delete_tag(user: User, blog: Blog, tag_id: int):
         if confirm_key == confirmation:
             tag.delete_instance()
             notice.ok(
-                f'Tag {tag.title_for_unsafe_display} deleted. You must <a href="{blog.republish_link}">republish your blog</a> to make these changes take affect.'
+                f'Tag {tag.title_for_display} deleted. You must <a href="{blog.republish_link}">republish your blog</a> to make these changes take affect.'
             )
 
         else:
