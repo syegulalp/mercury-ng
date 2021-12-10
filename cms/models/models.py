@@ -246,6 +246,10 @@ class User(BaseModel):
     last_login = DateTimeField(null=True)
     logout_nonce = CharField(max_length=64, null=True, default=None)
 
+    @property
+    def title(self):
+        return self.name
+
     def change_name(self, new_name: str):
         old_name = self.name
         self.name = new_name

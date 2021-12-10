@@ -271,7 +271,7 @@ def save_post_(post: Post, blog: Blog, notice: Notice, save_action: str):
 
     if save_action not in (Actions.Preview.PREVIEW_ONLY,):
         post.save()
-        notice.ok(f"Post {post.title_for_unsafe_display} saved successfully.")
+        notice.ok(f"Post {post.title_for_display} saved successfully.")
 
     if post.status == PublicationStatus.DRAFT:
         if save_action == Actions.Draft.SAVE_DRAFT:
