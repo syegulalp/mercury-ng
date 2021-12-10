@@ -59,15 +59,19 @@ class BaseModel(Model, MetadataModel):
 
     @property
     def manage_link_html(self):
-        return f'<a href="{self.manage_link}">{self.title_for_display}</a>'
+        return f'<a href="{self.manage_link}">{self.title_for_unsafe_display}</a>'
 
     @property
-    def title_for_display(self):
+    def title_for_listing(self):
         return f"<b>{unsafe(self.title)}</b>"
 
     @property
-    def title_for_display_with_id(self):
+    def title_for_unsafe_display(self):
         return f"<b>{unsafe(self.title)} (#{self.id})</b>"
+
+    @property
+    def title_with_id(self):
+        return f"{self.title} (#{self.id})"
 
     @classmethod
     def display(cls, query):

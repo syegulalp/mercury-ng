@@ -14,11 +14,10 @@ from cms.models import (
     db,
 )
 from cms.models.models import PostCategory
-from cms.models.utils import create_basename, fullpath
+from cms.models.utils import create_basename, fullpath, unsafe
 from cms.routes.ui import format_grid, make_menu, make_buttons, Button, Notice, Tab
 from cms.routes.context import blog_context, user_context, bt_gen
 from cms.routes.system import metadata_edit_, metadata_listing
-
 from cms.routes.post import file_upload_core
 
 import pathlib
@@ -147,7 +146,9 @@ def blog_settings(user: User, blog: Blog, tab: str = ""):
             current_blog.save()
             blog = current_blog
             Template.clear_cache()
-            notice.ok("Changes saved. You should republish this blog.")
+            notice.ok(
+                f'Changes saved. You must <a href="{blog.republish_link}">republish your blog</a> to make these changes take affect.'
+            )
 
     settings = template("include/blog-settings.tpl", blog=blog, tab=tab)
 
@@ -217,7 +218,20 @@ def new_blog_category_core(user: User, blog: Blog):
             parts = []
             for part in category_basename.split("/"):
                 parts.append(create_basename(part))
-            category_basename = "/".join(parts)
+            new_category_basename = "/".join(parts)
+            if (
+                Category.select()
+                .where(
+                    (Category.basename == new_category_basename)
+                    & (Category.id != category.id)
+                    & (Category.blog == blog)
+                )
+                .count()
+                > 0
+            ):
+                notice.fail(
+                    "At least one other category in this blog shares the selected basename. Choose another basename."
+                )
 
         category = Category(
             title=category_title,
@@ -279,6 +293,7 @@ def blog_category_edit(user: User, blog: Blog, category_id: int):
                 .where(
                     (Category.basename == new_category_basename)
                     & (Category.id != category.id)
+                    & (Category.blog == blog)
                 )
                 .count()
                 > 0
@@ -303,7 +318,7 @@ def blog_category_edit(user: User, blog: Blog, category_id: int):
         text=text,
         menu=make_menu("blog_category_edit", category),
         blog=blog,
-        page_title=f"Category {category.title} / {bt_gen(blog)})",
+        page_title=f"Category {category.title_with_id} / {bt_gen(blog)})",
         notice=notice,
     )
 
@@ -375,7 +390,7 @@ def blog_category_delete(user: User, blog: Blog, category_id: int):
                 p.add_subcategory(new_category)
                 p.enqueue()
 
-            text = f"Category {category.title} deleted and all posts reparented to {new_category.title}. All affected pages pushed to publishing."
+            text = f"Category {category.title_for_unsafe_display} deleted and all posts reparented to {new_category.title_for_unsafe_display}. All affected pages pushed to publishing."
 
             if not partial:
                 category.delete_instance()
@@ -385,14 +400,14 @@ def blog_category_delete(user: User, blog: Blog, category_id: int):
                 if p_count == s_count == 0:
                     category.delete_instance()
                 else:
-                    text = f'Posts reparented from {category.title} to {new_category.title}. <a href="{category.delete_link}?c={new_category.id}">{p_count+s_count} posts left.</a>'
+                    text = f'Posts reparented from {category.title_for_unsafe_display} to {new_category.title_for_unsafe_display}. <a href="{category.delete_link}?c={new_category.id}">{p_count+s_count} posts left.</a>'
 
     return template(
         "default.tpl",
         text=text,
         menu=make_menu("blog_category_delete", category),
         blog=blog,
-        page_title=f"Delete category {category.title} / {bt_gen(blog)})",
+        page_title=f"Delete category {category.title_with_id} / {bt_gen(blog)})",
     )
 
 
@@ -422,7 +437,7 @@ def blog_category_posts(user: User, blog: Blog, category_id: int, search_term=No
         menu=make_menu("blog_category_in_posts", category),
         blog=blog,
         search=search_term,
-        page_title=f"Posts in category {category.title} / {bt_gen(blog)}",
+        page_title=f"Posts in category {category.title_with_id} / {bt_gen(blog)}",
         request=request,
     )
 
@@ -476,28 +491,48 @@ def blog_tags_search(blog_id):
 @user_context(UserPermission.AUTHOR)
 def blog_category(user: User, blog: Blog, tag_id: int):
     tag = Tag.get_by_id(tag_id)
+    notice = Notice()
 
     if request.method == "POST":
         tag_title = request.forms.tag_title
         tag_basename = request.forms.tag_basename
 
-        if tag_title != tag.title:
-            tag.title = tag_title
-            tag.save()
+        tag.title = tag_title
 
-        if tag_basename != tag.basename:
+        if not tag_title:
+            notice.fail("You must provide a name for this tag")
+
+        if (
+            Tag.select()
+            .where(Tag.title == tag_title, Tag.id != tag.id, Tag.blog == blog)
+            .count()
+        ):
+            notice.fail("A tag with this name already exists. Choose another name.")
+
+        if not tag_basename:
+            notice.fail("You must provide a basename for this tag")
+        elif tag_basename != tag.basename:
             tag.basename = tag_basename
             tag.verify_basename()
-            tag.save()
+
+        if notice.is_ok():
+            if request.forms.get("save"):
+                tag.save()
+                notice.ok(
+                    f'Changes saved. You must <a href="{blog.republish_link}">republish your blog</a> to make these changes take affect.'
+                )
+            elif request.forms.get("verify"):
+                notice.ok(f'Changes are valid. Press "Save changes" to commit.')
 
     text = template("include/tag.tpl", tag=tag)
 
     return template(
         "default.tpl",
         text=text,
-        menu=make_menu("blog_tag", tag),
+        menu=make_menu("blog_tag_edit", tag),
         blog=blog,
-        page_title=f"Tag {tag.title} / {bt_gen(blog)}",
+        page_title=f"Tag {tag.title_with_id} / {bt_gen(blog)}",
+        notice=notice,
     )
 
 
@@ -529,7 +564,7 @@ def blog_tags_in_posts(user: User, blog: Blog, tag_id: int, search_term=None):
         text=text,
         search=search_term,
         menu=menu,
-        page_title=f"Posts in tag {tag.title} / {bt_gen(blog)}",
+        page_title=f"Posts in tag {tag.title_with_id} / {bt_gen(blog)}",
         request=request,
     )
 
@@ -538,6 +573,120 @@ def blog_tags_in_posts(user: User, blog: Blog, tag_id: int, search_term=None):
 def blog_tags_in_posts_search(blog_id, tag_id):
     search_term = request.query.query
     return blog_tags_in_posts(blog_id, tag_id, search_term)
+
+
+# TODO: check unicode on request.forms.xxxx
+
+
+@route("/blog/<blog_id:int>/tag/<tag_id:int>/merge", method=("GET", "POST"))
+@db_context
+@blog_context
+@user_context(UserPermission.EDITOR)
+def merge_tag(user: User, blog: Blog, tag_id: int):
+
+    old_tag: Tag = Tag.get_by_id(tag_id)
+    new_tag: Tag = Tag(title="")
+
+    notice = Notice()
+    
+    if request.method == "POST":
+
+        new_tag_title = request.forms.tag_title
+
+        target_tags = (
+            Tag.select().where(Tag.title == new_tag_title, Tag.blog == blog).limit(1)
+        )
+
+        if not target_tags.count():
+            notice.fail("No tag with that name exists in this blog. Choose an existing tag.")
+
+        new_tag = target_tags.get()
+
+        if request.forms.get("save"):
+
+            post: Post
+            for post in old_tag.posts.limit(25):
+                post.remove_tag(old_tag)
+                post.add_tag(new_tag)
+                post.enqueue()
+
+            t_count = old_tag.posts.count()
+            
+            if t_count:
+
+                notice.ok(
+                    f'25 instance of tag {old_tag.title_for_unsafe_display} merged with tag {new_tag.title_for_unsafe_display}. {t_count} remaining.'
+                )
+
+            else:
+
+                notice.ok(
+                    f'Tag {old_tag.title_for_unsafe_display} merged with tag {new_tag.title_for_unsafe_display}. All affected pages have been enqueued.'
+                )
+
+        elif request.forms.get("verify"):
+            if notice.is_ok():
+                notice.ok(f'Target tag {new_tag.title_for_unsafe_display} is valid. Click "Merge tags" to start merging.')
+
+    text = template("include/tag-merge.tpl", old_tag=old_tag, new_tag = new_tag)
+    
+    return template(
+        "default.tpl",
+        menu=make_menu("blog_tag_merge", old_tag),
+        page_title=f"Merging tag {old_tag.title_with_id} / {bt_gen(old_tag.blog)}",
+        notice=notice,
+        text=text,
+        blog=old_tag.blog,
+    )
+
+
+@route("/blog/<blog_id:int>/tag/<tag_id:int>/delete", method=("GET", "POST"))
+@db_context
+@blog_context
+@user_context(UserPermission.EDITOR)
+def delete_tag(user: User, blog: Blog, tag_id: int):
+
+    tag: Tag = Tag.get_by_id(tag_id)
+
+    notice = Notice()
+
+    confirmation = hashlib.sha256(
+        tag.title.encode("utf-8") + str(user.id).encode("utf-8")
+    ).hexdigest()
+
+    if request.method == "GET":
+        if tag.posts.count():
+            notice.notice('Deleting tags still attached to existing posts is not recommended. We recommend <a href="{tag.merge_link}">merging this tag with another tag first.</a>')
+        notice.warning(
+            f"Are you sure you want to delete tag {tag.title_for_unsafe_display}?",
+            "delete",
+            confirmation,
+            tag.manage_link,
+        )
+
+    else:
+
+        confirm_key = request.forms.action_key
+        if not confirm_key:
+            notice.fail("No delete key provided")
+
+        if confirm_key == confirmation:
+            tag.delete_instance()
+            notice.ok(
+                f'Tag {tag.title_for_unsafe_display} deleted. You must <a href="{blog.republish_link}">republish your blog</a> to make these changes take affect.'
+            )
+
+        else:
+            notice.fail("No delete key provided")
+
+    return template(
+        "default.tpl",
+        menu=make_menu("blog_tag_delete", tag),
+        page_title=f"Deleting tag {tag.title_with_id} / {bt_gen(tag.blog)}",
+        notice=notice,
+        text="",
+        blog=tag.blog,
+    )
 
 
 @route("/blog/<blog_id:int>/tag-fetch/<tag_text>")

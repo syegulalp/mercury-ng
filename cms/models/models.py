@@ -311,7 +311,7 @@ class User(BaseModel):
         return f"{APP_URL}/user/{self.id}"
 
     @property
-    def title_for_display(self):
+    def title_for_unsafe_display(self):
         return f"<b>{unsafe(self.name)}</b>"
 
     def save(self, basename=True):
@@ -1427,9 +1427,6 @@ class Post(BaseModel):
             subcat.delete_instance()
 
 
-Post.title_for_display = Post.title_for_display_with_id
-
-
 class PostRevision(Post, OtherModel):
     pass
 
@@ -1526,7 +1523,7 @@ class Media(BaseModel):
         return f'<a target="_blank" href="{self.manage_link}"><b>{self.image_link_html}</b></a>'
 
     @property
-    def title_for_display(self):
+    def title_for_listing(self):
         return (
             f'<a target="_blank" href="{self.manage_link}"><b>{self.filename}</b></a>'
         )
@@ -1540,7 +1537,7 @@ class Media(BaseModel):
         return (
             self.id,
             self.manage_link_html,
-            self.title_for_display,
+            self.title_for_listing,
             unsafe(self.friendly_name),
         )
 
@@ -1625,6 +1622,10 @@ class Tag(BaseModel):
     @property
     def manage_link(self):
         return f"{self.base_link}/edit"
+
+    @property
+    def merge_link(self):
+        return f"{self.base_link}/merge"
 
     @property
     def delete_link(self):

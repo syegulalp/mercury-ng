@@ -217,11 +217,30 @@ menus = {
         "parent_context": lambda x: x,
     },
     "blog_tag": {
-        "type": "text",
+        "type": "label",
         "text": lambda x: unsafe(x.title),
+        "path": lambda x: f"/blog/{x.blog.id}/tag/{x.id}/edit",
         "parent": "blog_tags",
         "parent_context": lambda x: x.blog,
     },
+    "blog_tag_edit": {
+        "type": "text",
+        "text": lambda x: "Edit",
+        "parent": "blog_tag",
+        "parent_context": lambda x: x,
+    },    
+    "blog_tag_delete": {
+        "type": "text",
+        "text": lambda x: "Delete",
+        "parent": "blog_tag",
+        "parent_context": lambda x: x,
+    },      
+    "blog_tag_merge": {
+        "type": "text",
+        "text": lambda x: "Merge",
+        "parent": "blog_tag",
+        "parent_context": lambda x: x,
+    },     
     "blog_tags_search": {
         "type": "text",
         "text": lambda x: f"Search: {x[1]}",
@@ -229,11 +248,11 @@ menus = {
         "parent_context": lambda x: x[0],
     },
     "blog_tag_in_posts": {
-        "type": "label",
-        "text": lambda x: f"Posts for tag: {x.title}",
-        "path": lambda x: f"/blog/{x.blog.id}/tag/{x.id}/posts",
-        "parent": "blog_tags",
-        "parent_context": lambda x: x.blog,
+        "type": "text",
+        "text": lambda x: f"Posts",
+        #"path": lambda x: f"/blog/{x.blog.id}/tag/{x.id}/posts",
+        "parent": "blog_tag",
+        "parent_context": lambda x: x,
     },
     "blog_tag_in_posts_search": {
         "type": "text",

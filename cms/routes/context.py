@@ -4,7 +4,7 @@ from cms.models import User, Blog, Template, Post, Metadata, System, UserPermiss
 from cms import settings
 from cms.errors import UserNotLoggedIn, BlogPermissionError
 
-
+# TODO: replace with overloaded .title_for_display method
 def bt_gen(blog):
     return f"{blog.title} (#{blog.id}) ({settings.PRODUCT_NAME})"
 
