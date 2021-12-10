@@ -1274,9 +1274,6 @@ class Post(BaseModel):
         blog: Blog = self.blog
         fileinfo: FileInfo
 
-        # if self.fileinfos.count() == 0:
-        #     self.build_fileinfos()
-
         total = 0
 
         for fileinfo in self.fileinfos:
@@ -1317,39 +1314,43 @@ class Post(BaseModel):
 
             for group in groups:
 
-                neighbors.append(
-                    group.published_posts.where(
-                        (Post.date_published > self.date_published)
-                        | (
-                            (
-                                (Post.date_published == self.date_published)
-                                & (Post.id > self.id)
+                try:
+                    neighbors.append(
+                        group.published_posts.where(
+                            (Post.date_published > self.date_published)
+                            | (
+                                (
+                                    (Post.date_published == self.date_published)
+                                    & (Post.id > self.id)
+                                )
                             )
                         )
-                    )
-                    .order_by(Post.date_published.asc(), Post.id.asc())
-                    .limit(1)
-                )
+                        .order_by(Post.date_published.asc(), Post.id.asc())
+                        .limit(1).get())
 
-                neighbors.append(
-                    group.published_posts.where(
-                        (Post.date_published < self.date_published)
-                        | (
-                            (
-                                (Post.date_published == self.date_published)
-                                & (Post.id < self.id)
+                except:
+                    pass
+
+                try:
+                    neighbors.append(
+                        group.published_posts.where(
+                            (Post.date_published < self.date_published)
+                            | (
+                                (
+                                    (Post.date_published == self.date_published)
+                                    & (Post.id < self.id)
+                                )
                             )
                         )
-                    )
-                    .order_by(Post.date_published.desc(), Post.id.desc())
-                    .limit(1)
-                )
+                        .order_by(Post.date_published.desc(), Post.id.desc())
+                        .limit(1).get())
+                except:
+                    pass
 
         total = 0
 
-        for n in neighbors:
-            for p in n:
-                total += p.enqueue(neighbors=False, indices=False)
+        for p in neighbors:
+            total += p.enqueue(neighbors=False, indices=False)
 
         return total
 
