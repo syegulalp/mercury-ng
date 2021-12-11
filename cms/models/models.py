@@ -1098,7 +1098,7 @@ class Post(BaseModel):
 
     @property
     def primary_category(self):
-        return self.categories_.where(PostCategory.is_primary == True).get().category
+        return self.categories_.where(PostCategory.is_primary == True).limit(1).get().category
 
     @property
     def categories_(self):
@@ -1108,7 +1108,6 @@ class Post(BaseModel):
 
     @property
     def categories(self):
-        c1 = self.categories_.order_by(Category.default.desc(), Category.title.asc())
         return Category.select().where(Category.id << self.categories_)
 
     @property
@@ -1162,7 +1161,6 @@ class Post(BaseModel):
             self.author.manage_link_html,
             self.primary_category.manage_link_html,
             self.date_published_str,
-            # date_to_str(self.date_published),
         )
 
     # Link methods
@@ -1270,6 +1268,10 @@ class Post(BaseModel):
         """
         Push this post and all its related archives, and the site indexes, to the queue.
         """
+
+        # TODO: another possible approach:
+        # pass along a set used to assemble a list of all the fileinfos
+        # then push those en masse
 
         blog: Blog = self.blog
         fileinfo: FileInfo
@@ -1450,7 +1452,6 @@ class PostCategory(BaseModel):
     post = ForeignKeyField(Post, index=True)
     category = ForeignKeyField(Category, index=True)
     is_primary = BooleanField(default=True)
-
 
 class Media(BaseModel):
     filename = TextField(null=False)
