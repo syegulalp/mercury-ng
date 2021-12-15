@@ -6,7 +6,6 @@ from bottle import (
     response,
     redirect,
     request,
-    view,
     HTTPResponse,
 )
 from cms.routes.ui import make_menu, make_buttons, format_grid, Button, Notice, Tab

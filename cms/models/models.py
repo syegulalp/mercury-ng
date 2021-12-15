@@ -7,8 +7,6 @@ from peewee import (
     DateTimeField,
     ForeignKeyField,
     BooleanField,
-    SQL,
-    JOIN,
 )
 
 from playhouse.sqlite_ext import RowIDField, SearchField, FTSModel
@@ -926,8 +924,8 @@ class Post(BaseModel):
     title = TextField(null=False)
     basename = TextField(null=False)
     excerpt_ = TextField(null=True)
-    blog = ForeignKeyField(Blog, index=True)
-    author = ForeignKeyField(User, index=True)
+    blog: Blog = ForeignKeyField(Blog, index=True)
+    author: User = ForeignKeyField(User, index=True)
     text = TextField(null=True)
     is_dirty = BooleanField(null=True)
     date_created = DateTimeField(default=datetime.datetime.utcnow, index=True)
@@ -1097,8 +1095,13 @@ class Post(BaseModel):
         return Media.select().where(Media.id << self.media_)
 
     @property
-    def primary_category(self):
-        return self.categories_.where(PostCategory.is_primary == True).limit(1).get().category
+    def primary_category(self) -> Category:
+        return (
+            self.categories_.where(PostCategory.is_primary == True)
+            .limit(1)
+            .get()
+            .category
+        )
 
     @property
     def categories_(self):
@@ -1146,7 +1149,6 @@ class Post(BaseModel):
     @classmethod
     def listing_columns(cls):
         return "ID", "", "Status", "Title", "Open by", "Author", "Category", "Pub Date"
-        # return "ID", "", "Status", "Title", "Author", "Category", "Pub Date"
 
     def listing(self):
 
@@ -1328,7 +1330,9 @@ class Post(BaseModel):
                             )
                         )
                         .order_by(Post.date_published.asc(), Post.id.asc())
-                        .limit(1).get())
+                        .limit(1)
+                        .get()
+                    )
 
                 except:
                     pass
@@ -1345,7 +1349,9 @@ class Post(BaseModel):
                             )
                         )
                         .order_by(Post.date_published.desc(), Post.id.desc())
-                        .limit(1).get())
+                        .limit(1)
+                        .get()
+                    )
                 except:
                     pass
 
@@ -1452,6 +1458,7 @@ class PostCategory(BaseModel):
     post = ForeignKeyField(Post, index=True)
     category = ForeignKeyField(Category, index=True)
     is_primary = BooleanField(default=True)
+
 
 class Media(BaseModel):
     filename = TextField(null=False)

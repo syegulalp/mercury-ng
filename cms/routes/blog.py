@@ -11,10 +11,9 @@ from cms.models import (
     Tag,
     UserPermission,
     Template,
-    db,
 )
 from cms.models.models import PostCategory
-from cms.models.utils import create_basename, fullpath, unsafe
+from cms.models.utils import create_basename, fullpath
 from cms.routes.ui import format_grid, make_menu, make_buttons, Button, Notice, Tab
 from cms.routes.context import blog_context, user_context, bt_gen
 from cms.routes.system import metadata_edit_, metadata_listing
@@ -590,17 +589,19 @@ def merge_tag(user: User, blog: Blog, tag_id: int):
     new_tag: Tag = Tag(title="")
 
     notice = Notice()
-    
+
     if request.method == "POST":
 
-        new_tag.title = request.forms.get("tag_title","")
+        new_tag.title = request.forms.get("tag_title", "")
 
         target_tags = (
             Tag.select().where(Tag.title == new_tag.title, Tag.blog == blog).limit(1)
         )
 
         if not target_tags.count():
-            notice.fail("No tag with that name exists in this blog. Choose an existing tag.")
+            notice.fail(
+                "No tag with that name exists in this blog. Choose an existing tag."
+            )
         else:
             new_tag = target_tags.get()
 
@@ -613,11 +614,11 @@ def merge_tag(user: User, blog: Blog, tag_id: int):
                 post.enqueue(indices=False)
 
             t_count = old_tag.posts.count()
-            
+
             if t_count:
 
                 notice.ok(
-                    f'25 instance of tag {old_tag.title_for_display} merged with tag {new_tag.title_for_display}. {t_count} remaining.'
+                    f"25 instance of tag {old_tag.title_for_display} merged with tag {new_tag.title_for_display}. {t_count} remaining."
                 )
 
             else:
@@ -625,15 +626,17 @@ def merge_tag(user: User, blog: Blog, tag_id: int):
                 blog.queue_indexes()
 
                 notice.ok(
-                    f'Tag {old_tag.title_for_display} merged with tag {new_tag.title_for_display}. All affected pages have been enqueued.'
+                    f"Tag {old_tag.title_for_display} merged with tag {new_tag.title_for_display}. All affected pages have been enqueued."
                 )
 
         elif request.forms.get("verify"):
             if notice.is_ok():
-                notice.ok(f'Target tag {new_tag.title_for_display} is valid. Click "Merge tags" to start merging.')
+                notice.ok(
+                    f'Target tag {new_tag.title_for_display} is valid. Click "Merge tags" to start merging.'
+                )
 
-    text = template("include/tag-merge.tpl", old_tag=old_tag, new_tag = new_tag)
-    
+    text = template("include/tag-merge.tpl", old_tag=old_tag, new_tag=new_tag)
+
     return template(
         "default.tpl",
         menu=make_menu("blog_tag_merge", old_tag),
@@ -660,7 +663,9 @@ def delete_tag(user: User, blog: Blog, tag_id: int):
 
     if request.method == "GET":
         if tag.posts.count():
-            notice.notice('Deleting tags still attached to existing posts is not recommended. We recommend <a href="{tag.merge_link}">merging this tag with another tag first.</a>')
+            notice.notice(
+                'Deleting tags still attached to existing posts is not recommended. We recommend <a href="{tag.merge_link}">merging this tag with another tag first.</a>'
+            )
         notice.warning(
             f"Are you sure you want to delete tag {tag.title_for_display}?",
             "delete",

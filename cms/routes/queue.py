@@ -3,7 +3,6 @@ from cms.models.enums import UserPermission
 from cms.models import Blog, User, db_context, Queue
 from cms.routes.ui import format_grid, make_menu, make_buttons, Notice, Button
 from cms.routes.context import blog_context, user_context, bt_gen
-from cms.settings import PRODUCT_NAME
 import datetime
 
 

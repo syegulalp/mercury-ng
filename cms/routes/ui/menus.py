@@ -228,19 +228,19 @@ menus = {
         "text": lambda x: "Edit",
         "parent": "blog_tag",
         "parent_context": lambda x: x,
-    },    
+    },
     "blog_tag_delete": {
         "type": "text",
         "text": lambda x: "Delete",
         "parent": "blog_tag",
         "parent_context": lambda x: x,
-    },      
+    },
     "blog_tag_merge": {
         "type": "text",
         "text": lambda x: "Merge",
         "parent": "blog_tag",
         "parent_context": lambda x: x,
-    },     
+    },
     "blog_tags_search": {
         "type": "text",
         "text": lambda x: f"Search: {x[1]}",
@@ -250,7 +250,7 @@ menus = {
     "blog_tag_in_posts": {
         "type": "text",
         "text": lambda x: f"Posts",
-        #"path": lambda x: f"/blog/{x.blog.id}/tag/{x.id}/posts",
+        # "path": lambda x: f"/blog/{x.blog.id}/tag/{x.id}/posts",
         "parent": "blog_tag",
         "parent_context": lambda x: x,
     },

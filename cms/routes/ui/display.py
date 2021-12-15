@@ -52,10 +52,10 @@ def format_grid(
         next_page=min(params["page"] + 1, params["last"]),
     )
 
-    listing = listing.paginate(params["page"], 20)
+    listing2 = listing.paginate(params["page"], 20)
 
     params.update(
-        local_count=listing.count(), start_of_page=params["current_position"] - 19
+        local_count=listing2.count(), start_of_page=params["current_position"] - 19
     )
     params.update(end_of_page=params["start_of_page"] + params["local_count"] - 1,)
 
@@ -64,7 +64,7 @@ def format_grid(
         buttons=buttons,
         qdict=qdict,
         listing_fmt=listing_fmt,
-        listing=listing.iterator(),
+        listing=listing2.iterator(),
         **params,
     )
 
