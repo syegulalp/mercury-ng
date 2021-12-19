@@ -26,19 +26,20 @@ def format_grid(
         if _.startswith("sort:"):
             sort_field = _[5:]
             sort_value = request.query[_]
-            sorting.append(sort_model.sorting[sort_field][sort_value])
+            sorting.append([getattr(sort_model, f"sortby_{sort_field}"), sort_value])
             qdict[_] = sort_value
         if _.startswith("filter:"):
             filter_field = _[7:]
             filter_value = request.query[_]
-            filtering.append(sort_model.filtering[filter_field][filter_value])
+            filtering.append([getattr(sort_model, f"filterby_{filter_field}"), filter_value])
             qdict[_] = filter_value
 
-    if sorting:
-        listing = listing.order_by(*sorting)
-    if filtering:
-        for _ in filtering:
-            listing = _(sort_model, listing)
+    
+    for sort, sort_value in sorting:
+        listing = sort(listing, sort_value)
+    for filter, filter_value in filtering:
+        listing = filter(listing, filter_value)
+    
 
     params = {"total": listing.count(), "listing_model": listing.model()}
 

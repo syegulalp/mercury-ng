@@ -527,6 +527,7 @@ class Theme(BaseModel):
 
 
 class Blog(BaseModel):
+
     title = TextField(null=False)
     description = TextField(null=True)
     base_url = TextField(null=False)
@@ -921,6 +922,22 @@ class Permission(BaseModel):
 
 
 class Post(BaseModel):
+    def sortby_status(self, descending: bool = False):
+        return self.order_by(Post.status.desc(descending))
+
+    def sortby_pub(self, descending: bool = False):
+        return self.order_by(Post.date_published.desc(descending))
+
+    def sortby_title(self, descending: bool = False):
+        return self.order_by(Post.title.desc(descending))
+
+    def sortby_id(self, descending: bool = False):
+        return self.order_by(Post.id.desc(descending))
+
+    def filterby_status(self, filter_type = "draft"):
+        status = getattr(PublicationStatus, filter_type.upper())
+        return self.where(Post.status == status)
+
     title = TextField(null=False)
     basename = TextField(null=False)
     excerpt_ = TextField(null=True)
@@ -2785,17 +2802,18 @@ class _System(MetadataModel):
 
 System = _System()
 
-Blog.sorting = {
-    "status": {"asc": Post.status, "desc": Post.status.desc(),},
-    "pub": {"asc": Post.date_published, "desc": Post.date_published.desc(),},
-    "title": {"asc": Post.title, "desc": Post.title.desc(),},
-    "id": {"asc": Post.id, "desc": Post.id.desc(),}
-    # TODO: author and category may prove tricky
-}
-Blog.filtering = {
-    "status": {
-        "draft": lambda model, listing: listing.where(
-            Post.status == PublicationStatus.DRAFT
-        )
-    }
-}
+# Blog.sorting = {
+#     "status": {"asc": Post.status, "desc": Post.status.desc(),},
+#     "pub": {"asc": Post.date_published, "desc": Post.date_published.desc(),},
+#     "title": {"asc": Post.title, "desc": Post.title.desc(),},
+#     "id": {"asc": Post.id, "desc": Post.id.desc(),}
+#     # TODO: author and category may prove tricky
+# }
+# Blog.filtering = {
+#     "status": {
+#         "draft": lambda model, listing: listing.where(
+#             Post.status == PublicationStatus.DRAFT
+#         )
+#     }
+# }
+

@@ -63,7 +63,7 @@ def blogs_menu(user: User, blog: Blog, search_term=None):
     )
 
     text = format_grid(
-        posts, buttons=buttons, search_query=search_term, sort_model=Blog
+        posts, buttons=buttons, search_query=search_term, sort_model=Post
     )
 
     return template(
