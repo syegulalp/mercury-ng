@@ -73,6 +73,14 @@ def remove_accents(input_str: str) -> str:
     return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
 
+basename_subs = (
+    (r"[ \./]", r"-"),
+    (r"<[^>]*>", r""),
+    (r"[^a-z0-9\-]*", r""),
+    (r"\-\-", r"-"),
+)
+
+
 def create_basename(basename: str) -> str:
 
     basename = remove_accents(basename)
@@ -82,10 +90,8 @@ def create_basename(basename: str) -> str:
     except Exception:
         basename = basename.lower()
 
-    basename = re.sub(r"[ \./]", r"-", basename)
-    basename = re.sub(r"<[^>]*>", r"", basename)
-    basename = re.sub(r"[^a-z0-9\-]*", r"", basename)
-    basename = re.sub(r"\-\-", r"-", basename)
+    for pattern, replacement in basename_subs:
+        basename = re.sub(pattern, replacement, basename)
 
     basename = urllib.parse.quote_plus(basename)
 
