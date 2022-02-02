@@ -1,4 +1,4 @@
-from cms.models.enums import QueueStatus
+from cms.models.enums import QueueStatus, TemplatePublishingMode
 from cms.models.models import (
     FileInfoMapping,
     TemplateMapping,
@@ -32,9 +32,11 @@ def republish_options(user: User, blog: Blog):
     text = f"""
 <h1>Republishing options</h1><hr>
 <ul>
-<li><a href="{l}/republish"><b>Republish:</b></a> Iterate through all posts in blog, push them into the queue, then run the queue manually.</li>
+<li><a href="{l}/republish"><b>Republish:</b></a> Iterate through all fileinfos for all pages in the blog, push them into the queue, then run the queue manually.</li>
 <li><a href="{l}/runqueue"><b>Run queue manually:</b></a> Iterate through the queue by way of the web interface, rather than the job runner script.</li>
 <li><a href="{l}/rebuild-fileinfos"><b>Rebuild fileinfos:</b></a> Delete and recreate all fileinfos for this blog.</li>
+<hr/>
+<li><a href="{l}/republish-by-page"><b>Republish by page:</b></a> Iterate through all fileinfos for all pages in the blog, push them into the queue, then run the queue manually. Slower than the above republishing option; mainly used for debugging.</li>
 </ul>
 """
     return template(
@@ -125,16 +127,57 @@ Notification.requestPermission().then(function (permission) {{
 @db_context
 @blog_context
 @user_context(UserPermission.EDITOR)
+def republish_blog_fast(user: User, blog: Blog, pass_: int = 0):
+
+    all_fileinfos = FileInfo.select()
+    all_templates = blog.templates.select(Template.id).where(
+        Template.publishing_mode != TemplatePublishingMode.DO_NOT_PUBLISH
+    )
+    blog_fileinfos = all_fileinfos.where(FileInfo.template << all_templates)
+    total_fileinfos = blog_fileinfos.count()
+
+    fileinfos = blog_fileinfos.paginate(pass_, 100)
+
+    text = f"Adding fileinfos {pass_ * 100} of {total_fileinfos}. Don't navigate away"
+    redir = f"/blog/{blog.id}/republish/{pass_+1}"
+    headers = f'<meta http-equiv="Refresh" content="0; URL={redir}">'
+
+    if fileinfos.count() > 0:
+        f: FileInfo
+        for f in fileinfos:
+            f.enqueue(True)
+    else:
+        text = "Done."
+        headers = ""
+
+    return template(
+        "default.tpl",
+        text=text,
+        headers=headers,
+        blog=blog,
+        page_title=f"Rebuilding blog #{blog.id}, pass {pass_*100} of {total_fileinfos}",
+        menu=make_menu("blog_menu", blog),
+    )
+
+
+@route("/blog/<blog_id:int>/republish-by-page/<pass_:int>")
+@route("/blog/<blog_id:int>/republish-by-page")
+@db_context
+@blog_context
+@user_context(UserPermission.EDITOR)
 def republish_blog(user: User, blog: Blog, pass_: int = 0):
     """
-    Iterates through all posts in the blog and queues their fileinfos for publication. This does not attempt to determine if a given template, newly created, does not yet have fileinfos for a given page. It is potentially incomplete if new templates have been created without fileinfos created for them.
+    Iterates through all posts in the blog and queues their fileinfos for publication.
+    This does not attempt to determine if a given template, newly created, does not yet
+    have fileinfos for a given page. It is potentially incomplete if new templates have
+    been created without fileinfos created for them.
     """
 
     post: Post
     p = blog.published_posts.order_by(Post.date_published.asc())
 
     total_posts = p.count()
-    redir = f"/blog/{blog.id}/republish/{pass_+1}"
+    redir = f"/blog/{blog.id}/republish-by-page/{pass_+1}"
     headers = f'<meta http-equiv="Refresh" content="0; URL={redir}">'
 
     if pass_ == 0:
