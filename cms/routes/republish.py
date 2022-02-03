@@ -134,11 +134,11 @@ def republish_blog_fast(user: User, blog: Blog, pass_: int = 0):
         Template.publishing_mode != TemplatePublishingMode.DO_NOT_PUBLISH
     )
     blog_fileinfos = all_fileinfos.where(FileInfo.template << all_templates)
-    total_fileinfos = blog_fileinfos.count()
+    total_fileinfo_count = blog_fileinfos.count()
 
     fileinfos = blog_fileinfos.paginate(pass_, 100)
 
-    text = f"Adding fileinfos {pass_ * 100} of {total_fileinfos}. Don't navigate away"
+    text = f"Adding fileinfos {pass_ * 100} of {total_fileinfo_count}. Don't navigate away"
     redir = f"/blog/{blog.id}/republish/{pass_+1}"
     headers = f'<meta http-equiv="Refresh" content="0; URL={redir}">'
 
@@ -155,7 +155,7 @@ def republish_blog_fast(user: User, blog: Blog, pass_: int = 0):
         text=text,
         headers=headers,
         blog=blog,
-        page_title=f"Rebuilding blog #{blog.id}, pass {pass_*100} of {total_fileinfos}",
+        page_title=f"Rebuilding blog #{blog.id}, pass {pass_*100} of {total_fileinfo_count}",
         menu=make_menu("blog_menu", blog),
     )
 
@@ -165,7 +165,7 @@ def republish_blog_fast(user: User, blog: Blog, pass_: int = 0):
 @db_context
 @blog_context
 @user_context(UserPermission.EDITOR)
-def republish_blog(user: User, blog: Blog, pass_: int = 0):
+def republish_blog_by_page(user: User, blog: Blog, pass_: int = 0):
     """
     Iterates through all posts in the blog and queues their fileinfos for publication.
     This does not attempt to determine if a given template, newly created, does not yet
@@ -176,7 +176,7 @@ def republish_blog(user: User, blog: Blog, pass_: int = 0):
     post: Post
     p = blog.published_posts.order_by(Post.date_published.asc())
 
-    total_posts = p.count()
+    total_posts_count = p.count()
     redir = f"/blog/{blog.id}/republish-by-page/{pass_+1}"
     headers = f'<meta http-equiv="Refresh" content="0; URL={redir}">'
 
@@ -192,7 +192,7 @@ def republish_blog(user: User, blog: Blog, pass_: int = 0):
             q: FileInfo
             for q in queue_set:
                 q.enqueue()
-            text = f"Queued {pass_*100} of {total_posts}... (Don't navigate away yet!)"
+            text = f"Queued {pass_*100} of {total_posts_count}... (Don't navigate away yet!)"
         else:
             blog.queue_indexes()
             Queue.start(force_start=True)
@@ -204,7 +204,7 @@ def republish_blog(user: User, blog: Blog, pass_: int = 0):
         text=text,
         headers=headers,
         blog=blog,
-        page_title=f"Rebuilding blog #{blog.id}, pass {pass_*100} of {total_posts}",
+        page_title=f"Rebuilding blog #{blog.id}, pass {pass_*100} of {total_posts_count}",
         menu=make_menu("blog_menu", blog),
     )
 
@@ -219,7 +219,7 @@ def republish_blog_all(user: User, blog: Blog, pass_: int = 0):
     Iterates through all posts in a blog, clears all existing fileinfos, and creates new ones from the available templates. Slow, but complete.
     """
 
-    total_posts = blog.posts.count()
+    total_post_count = blog.posts.count()
     redir = f"/blog/{blog.id}/rebuild-fileinfos/{pass_+1}"
     headers = f'<meta http-equiv="Refresh" content="0; URL={redir}">'
 
@@ -239,7 +239,7 @@ def republish_blog_all(user: User, blog: Blog, pass_: int = 0):
             post: Post
             for post in posts:
                 post.build_fileinfos()
-            text = f"Rebuilt {pass_*100} of {total_posts}... (Don't navigate away yet!)"
+            text = f"Rebuilt {pass_*100} of {total_post_count}... (Don't navigate away yet!)"
         else:
             # TODO: rebuild fileinfos for all other template types too
             blog.build_index_fileinfos()
@@ -253,7 +253,7 @@ def republish_blog_all(user: User, blog: Blog, pass_: int = 0):
         text=text,
         headers=headers,
         blog=blog,
-        page_title=f"Rebuilding fileinfos for blog #{blog.id}, pass {pass_*100} of {total_posts}",
+        page_title=f"Rebuilding fileinfos for blog #{blog.id}, pass {pass_*100} of {total_post_count}",
         menu=make_menu("blog_menu", blog),
     )
 
@@ -270,7 +270,7 @@ def create_fileinfos_for_template(
     Given a template, clears any fileinfos associated with it, then iterates through all posts and generates new fileinfos associated with that template.
     """
 
-    total_posts = blog.published_posts.count()
+    total_post_count = blog.published_posts.count()
 
     headers = ""
     text = ""
@@ -295,7 +295,7 @@ def create_fileinfos_for_template(
                 {template_to_republish.id: [_ for _ in template_to_republish.mappings]},
             )
             text = (
-                f"Processed {pass_*100} of {total_posts}... (Don't navigate away yet!)"
+                f"Processed {pass_*100} of {total_post_count}... (Don't navigate away yet!)"
             )
 
         else:
@@ -309,7 +309,7 @@ def create_fileinfos_for_template(
         text=text,
         headers=headers,
         blog=blog,
-        page_title=f"Rebuilding blog #{blog.id}, pass {pass_*100} of {total_posts}",
+        page_title=f"Rebuilding blog #{blog.id}, pass {pass_*100} of {total_post_count}",
         menu=make_menu("blog_menu", blog),
     )
 
