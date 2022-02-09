@@ -136,7 +136,10 @@ def republish_blog_fast(user: User, blog: Blog, pass_: int = 0):
     blog_fileinfos = all_fileinfos.where(FileInfo.template << all_templates)
     total_fileinfo_count = blog_fileinfos.count()
 
-    fileinfos = blog_fileinfos.paginate(pass_, 100)
+    published_fileinfo_mappings = FileInfoMapping.select(FileInfoMapping.fileinfo).where(FileInfoMapping.post << blog.published_posts)
+    published_fileinfos = blog_fileinfos.where(FileInfo.id << published_fileinfo_mappings)
+
+    fileinfos = published_fileinfos.paginate(pass_, 100)
 
     text = f"Adding fileinfos {pass_ * 100} of {total_fileinfo_count}. Don't navigate away"
     redir = f"/blog/{blog.id}/republish/{pass_+1}"
@@ -228,10 +231,10 @@ def republish_blog_all(user: User, blog: Blog, pass_: int = 0):
             "Starting rebuilding of blog fileinfos. Don't navigate away from this page."
         )
 
-        FileInfo.delete().where(FileInfo.blog == blog).execute()
         fis = FileInfo.select(FileInfo.id)
         FileInfoMapping.delete().where(~FileInfoMapping.fileinfo << fis).execute()
         Context.delete().where(~Context.fileinfo << fis).execute()
+        FileInfo.delete().where(FileInfo.blog == blog).execute()
 
     else:
         posts = blog.posts.paginate(pass_, 100)
@@ -241,10 +244,9 @@ def republish_blog_all(user: User, blog: Blog, pass_: int = 0):
                 post.build_fileinfos()
             text = f"Rebuilt {pass_*100} of {total_post_count}... (Don't navigate away yet!)"
         else:
-            # TODO: rebuild fileinfos for all other template types too
             blog.build_index_fileinfos()
-            blog.queue_indexes()
-            Queue.start(force_start=True)
+            # blog.queue_indexes()
+            # Queue.start(force_start=True)
             text = "Done. You may now navigate away."
             headers = ""
 
