@@ -377,6 +377,13 @@ class Theme(BaseModel):
     source_dir = TextField(null=False)
     source_theme = IntegerField(null=True)
 
+    # blog_id is Null for system themes
+    # note that if we create a theme, associate it with a blog,
+    # and then associate a new theme for that blog, the old theme
+    # will still have the old blog ID. is this the behavior we want?
+    # however, also note that when we apply a theme, it's cloned for the blog
+    # so this may not be the issue we think it is
+
     @property
     def safe_title(self):
         return create_basename(self.title)
