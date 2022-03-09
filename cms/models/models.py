@@ -2809,18 +2809,6 @@ class _System(MetadataModel):
 
 System = _System()
 
-# Blog.sorting = {
-#     "status": {"asc": Post.status, "desc": Post.status.desc(),},
-#     "pub": {"asc": Post.date_published, "desc": Post.date_published.desc(),},
-#     "title": {"asc": Post.title, "desc": Post.title.desc(),},
-#     "id": {"asc": Post.id, "desc": Post.id.desc(),}
-#     # TODO: author and category may prove tricky
-# }
-# Blog.filtering = {
-#     "status": {
-#         "draft": lambda model, listing: listing.where(
-#             Post.status == PublicationStatus.DRAFT
-#         )
-#     }
-# }
-
+# TODO: operations where we do things by context type
+# e.g., if last_context.context_type == "Y":
+# should be turned into methods on the context object perhaps?
