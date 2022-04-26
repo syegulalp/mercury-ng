@@ -9,7 +9,7 @@ debug.log
 /obsolete
 /output
 /migrations
-/venv*
+/.env*
 
 .vscode
 .git.*
