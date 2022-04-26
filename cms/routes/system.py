@@ -409,7 +409,7 @@ def metadata_new_(user: User, system):
 @system_context
 @user_context(UserPermission.ADMINISTRATOR)
 def metadata_edit(user: User, system, metadata_id: int):
-    return metadata_edit_(metadata_id, system, "system_metadata_edit")
+    return metadata_edit_core(metadata_id, system, "system_metadata_edit")
 
 
 def metadata_listing(object_type, object_id, context, menu):
@@ -428,7 +428,7 @@ def metadata_listing(object_type, object_id, context, menu):
     )
 
 
-def metadata_edit_(metadata_id, context, menu):
+def metadata_edit_core(metadata_id, context, menu):
     metadata = Metadata.get_by_id(metadata_id)
     notice = Notice()
 

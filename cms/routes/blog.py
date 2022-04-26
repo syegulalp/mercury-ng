@@ -16,7 +16,7 @@ from cms.models.models import PostCategory
 from cms.models.utils import create_basename, fullpath
 from cms.routes.ui import format_grid, make_menu, make_buttons, Button, Notice, Tab
 from cms.routes.context import blog_context, user_context, generate_blog_title
-from cms.routes.system import metadata_edit_, metadata_listing
+from cms.routes.system import metadata_edit_core, metadata_listing
 from cms.routes.post import file_upload_core
 
 import pathlib
@@ -740,7 +740,7 @@ def blog_metadata(user: User, blog: Blog):
 @blog_context
 @user_context(UserPermission.EDITOR)
 def blog_metadata_edit(user: User, blog: Blog, metadata_id: int):
-    return metadata_edit_(metadata_id, blog, "blog_metadata_edit")
+    return metadata_edit_core(metadata_id, blog, "blog_metadata_edit")
 
 
 @route("/blog/<blog_id:int>/save-theme", method=("GET", "POST"))
