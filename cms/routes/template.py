@@ -15,7 +15,7 @@ from cms.models import (
     Context,
 )
 from cms.routes.ui import format_grid, make_menu, make_buttons, Tab, Notice, Button
-from cms.routes.context import blog_context, user_context, template_context, bt_gen
+from cms.routes.context import blog_context, user_context, template_context, generate_blog_title
 from cms.settings import PRODUCT_NAME, PRODUCT_VERSION
 
 import hashlib
@@ -106,7 +106,7 @@ def new_template_core(user: User, blog: Blog, template_type: str):
             notice=notice,
             default_mapping=default_mapping,
             blog=blog,
-            page_title=f"Creating new template for {bt_gen(blog)}",
+            page_title=f"Creating new template for {generate_blog_title(blog)}",
         ),
     )
 
@@ -141,7 +141,7 @@ def blog_templates(user: User, blog: Blog, tab: str = "index"):
         text=grid,
         blog=blog,
         tabitem=blog,
-        page_title=f"Templates for {bt_gen(blog)}",
+        page_title=f"Templates for {generate_blog_title(blog)}",
     )
 
 
@@ -177,7 +177,7 @@ def edit_template(user: User, blog_template: Template, blog_id):
         default_mapping=blog_template.default_mapping.mapping
         if blog_template.template_type not in (TemplateType.INCLUDE, TemplateType.MEDIA)
         else None,
-        page_title=f"Editing template {blog_template.title} ({blog_template.id}) / {bt_gen(blog_template.blog)}",
+        page_title=f"Editing template {blog_template.title} ({blog_template.id}) / {generate_blog_title(blog_template.blog)}",
     )
 
 
@@ -316,7 +316,7 @@ def delete_teplate(user: User, blog_template: Template, blog_id):
     return template(
         "default.tpl",
         menu=make_menu("template_menu", blog_template),
-        page_title=f"Deleting template {blog_template.title} ({blog_template.id}) {bt_gen(blog_template.blog)}",
+        page_title=f"Deleting template {blog_template.title} ({blog_template.id}) {generate_blog_title(blog_template.blog)}",
         notice=notice,
         text="",
         blog=blog_template.blog,

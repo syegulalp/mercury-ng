@@ -9,7 +9,7 @@ from cms.models.models import (
 from bottle import route, template, request
 from cms.models import Blog, Post, User, db_context, Queue, Context
 from cms.routes.ui import make_menu
-from cms.routes.context import blog_context, user_context, bt_gen
+from cms.routes.context import blog_context, user_context, generate_blog_title
 
 import datetime
 
@@ -43,7 +43,7 @@ def republish_options(user: User, blog: Blog):
         "default.tpl",
         text=text,
         blog=blog,
-        page_title=f"Republishing options for {bt_gen(blog)}",
+        page_title=f"Republishing options for {generate_blog_title(blog)}",
         menu=make_menu("blog_republish", blog),
     )
 

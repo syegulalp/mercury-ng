@@ -19,7 +19,7 @@ from cms.models import (
     System,
 )
 from cms.routes.ui import make_menu, Notice, format_grid
-from cms.routes.context import blog_context, user_context, post_context, bt_gen
+from cms.routes.context import blog_context, user_context, post_context, generate_blog_title
 from cms.models.utils import str_to_date, unsafe
 from cms.settings import PRODUCT_VERSION
 
@@ -86,7 +86,7 @@ def new_post(user: User, blog: Blog):
     return template(
         "post-edit.tpl",
         menu=make_menu("new_post", post),
-        page_title=f"New post in {bt_gen(blog)}",
+        page_title=f"New post in {generate_blog_title(blog)}",
         post=post,
         blog=blog,
         post_footer=script
@@ -152,7 +152,7 @@ def live_redirect(blog_id, post_id):
 
 
 def edit_page_title(post: Post):
-    return f"Edit: {post.title} (#{post.id}) / {bt_gen(post.blog)}"
+    return f"Edit: {post.title} (#{post.id}) / {generate_blog_title(post.blog)}"
 
 
 @route("/blog/<blog_id:int>/post/<post_id:int>/edit")
@@ -482,7 +482,7 @@ function refreshMediaList(){{}};
         text=text,
         post_footer=script,
         menu=make_menu("post_media_menu", post),
-        page_title=f"Media for post #{post.id} / {bt_gen(blog)}",
+        page_title=f"Media for post #{post.id} / {generate_blog_title(blog)}",
     )
 
 
@@ -663,7 +663,7 @@ def delete_post(user: User, post: Post, confirm_key=None):
     return template(
         "default.tpl",
         menu=make_menu("all_blog_posts", post.blog),
-        page_title=f"Deleting page {post.title} (#{post.id}) / {bt_gen(post.blog)}",
+        page_title=f"Deleting page {post.title} (#{post.id}) / {generate_blog_title(post.blog)}",
         notice=notice,
         text="",
         blog=post.blog,

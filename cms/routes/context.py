@@ -5,7 +5,7 @@ from cms import settings
 from cms.errors import UserNotLoggedIn, BlogPermissionError
 
 # TODO: replace with overloaded .title_for_display method
-def bt_gen(blog):
+def generate_blog_title(blog):
     return f"{blog.title} (#{blog.id}) ({settings.PRODUCT_NAME})"
 
 

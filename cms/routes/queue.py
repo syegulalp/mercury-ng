@@ -2,7 +2,7 @@ from bottle import route, template
 from cms.models.enums import UserPermission
 from cms.models import Blog, User, db_context, Queue
 from cms.routes.ui import format_grid, make_menu, make_buttons, Notice, Button
-from cms.routes.context import blog_context, user_context, bt_gen
+from cms.routes.context import blog_context, user_context, generate_blog_title
 import datetime
 
 
@@ -67,7 +67,7 @@ def blog_queue(user: User, blog: Blog):
         text=text,
         notice=notice,
         menu=make_menu("blog_queue", blog),
-        page_title=f"Publishing queue for {bt_gen(blog)}",
+        page_title=f"Publishing queue for {generate_blog_title(blog)}",
     )
 
 
@@ -104,7 +104,7 @@ def blog_clear_queue(user: User, blog: Blog, action: str):
         text="",
         notice=notice,
         menu=make_menu("blog_menu", blog),
-        page_title=f"Publishing queue for {bt_gen(blog)}",
+        page_title=f"Publishing queue for {generate_blog_title(blog)}",
     )
 
 
@@ -123,5 +123,5 @@ def blog_queue_item(user: User, blog: Blog, item_id: int):
         blog=blog,
         text=text,
         menu=make_menu("blog_menu", blog),
-        page_title=f"Item # {item_id} in publishing queue for {bt_gen(blog)}",
+        page_title=f"Item # {item_id} in publishing queue for {generate_blog_title(blog)}",
     )

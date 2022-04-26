@@ -1,7 +1,7 @@
 from bottle import route, template, request
 from cms.models import User, db_context, Post, System
 from cms.routes.ui import format_grid, make_menu, make_buttons, Button, Notice
-from cms.routes.context import user_context, bt_gen, system_context
+from cms.routes.context import user_context, generate_blog_title, system_context
 from cms.routes.system import users_menu_base, ME_TABS
 
 import hashlib
@@ -35,7 +35,7 @@ def unlock_articles(user: User, system):
         blog=system,
         text=text,
         menu=make_menu("unlock_menu", context=user),
-        page_title=bt_gen(system),
+        page_title=generate_blog_title(system),
     )
 
 
@@ -74,7 +74,7 @@ def unlock_articles_confirm(user: User, system):
     return template(
         "default.tpl",
         menu=make_menu("blogs_menu"),
-        page_title=f"Unlocking posts / {bt_gen(system)}",
+        page_title=f"Unlocking posts / {generate_blog_title(system)}",
         notice=notice,
         text="",
         blog=system,

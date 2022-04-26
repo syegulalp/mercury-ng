@@ -15,7 +15,7 @@ from cms.models import (
 from cms.models.models import PostCategory
 from cms.models.utils import create_basename, fullpath
 from cms.routes.ui import format_grid, make_menu, make_buttons, Button, Notice, Tab
-from cms.routes.context import blog_context, user_context, bt_gen
+from cms.routes.context import blog_context, user_context, generate_blog_title
 from cms.routes.system import metadata_edit_, metadata_listing
 from cms.routes.post import file_upload_core
 
@@ -72,7 +72,7 @@ def blogs_menu(user: User, blog: Blog, search_term=None):
         text=text,
         search=search_term,
         menu=menu,
-        page_title=bt_gen(blog),
+        page_title=generate_blog_title(blog),
         request=request,
     )
 
@@ -160,7 +160,7 @@ def blog_settings(user: User, blog: Blog, tab: str = ""):
         tabitem=blog,
         blog=current_blog,
         text=settings,
-        page_title=f"Settings for {bt_gen(blog)}",
+        page_title=f"Settings for {generate_blog_title(blog)}",
     )
 
 
@@ -177,7 +177,7 @@ def blog_categories(user: User, blog: Blog):
         text=text,
         menu=make_menu("blog_categories", blog),
         blog=blog,
-        page_title=f"Categories in {bt_gen(blog)})",
+        page_title=f"Categories in {generate_blog_title(blog)})",
     )
 
 
@@ -251,7 +251,7 @@ def new_blog_category_core(user: User, blog: Blog):
         text=text,
         menu=make_menu("new_blog_category", blog),
         blog=blog,
-        page_title=f"New category / {bt_gen(blog)})",
+        page_title=f"New category / {generate_blog_title(blog)})",
         notice=notice,
     )
 
@@ -317,7 +317,7 @@ def blog_category_edit(user: User, blog: Blog, category_id: int):
         text=text,
         menu=make_menu("blog_category_edit", category),
         blog=blog,
-        page_title=f"Category {category.title_with_id} / {bt_gen(blog)})",
+        page_title=f"Category {category.title_with_id} / {generate_blog_title(blog)})",
         notice=notice,
     )
 
@@ -408,7 +408,7 @@ def blog_category_delete(user: User, blog: Blog, category_id: int):
         text=text,
         menu=make_menu("blog_category_delete", category),
         blog=blog,
-        page_title=f"Delete category {category.title_with_id} / {bt_gen(blog)})",
+        page_title=f"Delete category {category.title_with_id} / {generate_blog_title(blog)})",
     )
 
 
@@ -438,7 +438,7 @@ def blog_category_posts(user: User, blog: Blog, category_id: int, search_term=No
         menu=make_menu("blog_category_in_posts", category),
         blog=blog,
         search=search_term,
-        page_title=f"Posts in category {category.title_with_id} / {bt_gen(blog)}",
+        page_title=f"Posts in category {category.title_with_id} / {generate_blog_title(blog)}",
         request=request,
     )
 
@@ -476,7 +476,7 @@ def blog_tags(user: User, blog: Blog, search_term=None):
         search=search_term,
         menu=menu,
         request=request,
-        page_title=f"Tags in {bt_gen(blog)}",
+        page_title=f"Tags in {generate_blog_title(blog)}",
     )
 
 
@@ -532,7 +532,7 @@ def blog_category(user: User, blog: Blog, tag_id: int):
         text=text,
         menu=make_menu("blog_tag_edit", tag),
         blog=blog,
-        page_title=f"Tag {tag.title_with_id} / {bt_gen(blog)}",
+        page_title=f"Tag {tag.title_with_id} / {generate_blog_title(blog)}",
         notice=notice,
     )
 
@@ -565,7 +565,7 @@ def blog_tags_in_posts(user: User, blog: Blog, tag_id: int, search_term=None):
         text=text,
         search=search_term,
         menu=menu,
-        page_title=f"Posts in tag {tag.title_with_id} / {bt_gen(blog)}",
+        page_title=f"Posts in tag {tag.title_with_id} / {generate_blog_title(blog)}",
         request=request,
     )
 
@@ -640,7 +640,7 @@ def merge_tag(user: User, blog: Blog, tag_id: int):
     return template(
         "default.tpl",
         menu=make_menu("blog_tag_merge", old_tag),
-        page_title=f"Merging tag {old_tag.title_with_id} / {bt_gen(old_tag.blog)}",
+        page_title=f"Merging tag {old_tag.title_with_id} / {generate_blog_title(old_tag.blog)}",
         notice=notice,
         text=text,
         blog=old_tag.blog,
@@ -691,7 +691,7 @@ def delete_tag(user: User, blog: Blog, tag_id: int):
     return template(
         "default.tpl",
         menu=make_menu("blog_tag_delete", tag),
-        page_title=f"Deleting tag {tag.title_with_id} / {bt_gen(tag.blog)}",
+        page_title=f"Deleting tag {tag.title_with_id} / {generate_blog_title(tag.blog)}",
         notice=notice,
         text="",
         blog=tag.blog,
@@ -762,7 +762,7 @@ def blog_export_theme_save(user: User, blog: Blog):
         blog=blog,
         text=text,
         menu=make_menu("all_blog_posts", blog),
-        page_title=f"Save theme / {bt_gen(blog)}",
+        page_title=f"Save theme / {generate_blog_title(blog)}",
     )
 
 
@@ -791,7 +791,7 @@ def blog_export_theme_export(user: User, blog: Blog):
         blog=blog,
         text=text,
         menu=make_menu("all_blog_posts", blog),
-        page_title=f"Export theme / {bt_gen(blog)}",
+        page_title=f"Export theme / {generate_blog_title(blog)}",
     )
 
 

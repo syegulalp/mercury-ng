@@ -3,7 +3,7 @@ import pathlib
 from bottle import route, template, request
 from cms.models import Blog, User, db_context, Media, UserPermission, Post
 from cms.routes.ui import format_grid, make_menu, make_buttons, Button, Notice
-from cms.routes.context import blog_context, user_context, bt_gen
+from cms.routes.context import blog_context, user_context, generate_blog_title
 
 from cms.settings import PRODUCT_VERSION
 import hashlib, os, datetime
@@ -46,7 +46,7 @@ function refreshMediaList(){{}};
         search=search_term,
         menu=menu,
         request=request,
-        page_title=f"Media for {bt_gen(blog)}",
+        page_title=f"Media for {generate_blog_title(blog)}",
     )
 
 
@@ -107,7 +107,7 @@ function refreshMediaList(){{}};
         notice=notice,
         post_footer=script,
         menu=make_menu("blog_media", blog),
-        page_title=f"Upload media for {bt_gen(blog)}",
+        page_title=f"Upload media for {generate_blog_title(blog)}",
     )
 
 
@@ -125,7 +125,7 @@ def media_menu_in(user: User, blog: Blog, media_id: int):
         text=text,
         blog=blog,
         menu=make_menu("blog_media_item_in", media_item),
-        page_title=f"Posts with media #{media_item.id} / {bt_gen(blog)}",
+        page_title=f"Posts with media #{media_item.id} / {generate_blog_title(blog)}",
     )
 
 
@@ -213,7 +213,7 @@ def media_edit(user: User, blog: Blog, media_id: int):
         notice=notice,
         post_footer=script,
         menu=make_menu("blog_media_item", media_item),
-        page_title=f"Edit media #{media_item.id} / {bt_gen(blog)}",
+        page_title=f"Edit media #{media_item.id} / {generate_blog_title(blog)}",
     )
 
 
@@ -255,7 +255,7 @@ def media_delete(user: User, blog: Blog, media_id: int):
     return template(
         "default.tpl",
         menu=make_menu("blog_media_item", media_item),
-        page_title=f"Deleting media #{media_item.id} / {bt_gen(blog)}",
+        page_title=f"Deleting media #{media_item.id} / {generate_blog_title(blog)}",
         notice=notice,
         text="",
         blog=blog,
