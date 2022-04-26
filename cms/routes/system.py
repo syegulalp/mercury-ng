@@ -332,7 +332,11 @@ def new_blog_base(user: User, system):
     )
 
     text2 = template(
-        "include/blog-settings.tpl", blog=blog, tab="url", no_form=True, setup=True,
+        "include/blog-settings.tpl",
+        blog=blog,
+        tab="url",
+        no_form=True,
+        setup=True,
     )
 
     return (

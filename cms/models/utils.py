@@ -105,9 +105,6 @@ def hash_password(password: str) -> str:
     return hashed_pwd
 
 
-# def verify_password(password, hash):
-
-
 def send_email(results: str):
 
     msg = EmailMessage()

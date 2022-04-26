@@ -775,7 +775,7 @@ def blog_export_theme_export(user: User, blog: Blog):
     - save to name
     - export to a theme package file
     - save theme in data directory where it can be applied
-    
+
     """
 
     blog.theme.export_to_package()
@@ -808,11 +808,19 @@ def blog_export_theme(user: User, blog: Blog, step=0, substep=1):
     zip_path = pathlib.Path(blog.base_filepath, f"{blog.id}.zip")
 
     if step == 0:
-        archive = zipfile.ZipFile(zip_path, mode="w", compression=zipfile.ZIP_DEFLATED,)
+        archive = zipfile.ZipFile(
+            zip_path,
+            mode="w",
+            compression=zipfile.ZIP_DEFLATED,
+        )
         archive.close()
         return redirect(f"/blog/{blog.id}/export/1/1")
 
-    archive = zipfile.ZipFile(zip_path, mode="a", compression=zipfile.ZIP_DEFLATED,)
+    archive = zipfile.ZipFile(
+        zip_path,
+        mode="a",
+        compression=zipfile.ZIP_DEFLATED,
+    )
 
     if step == 1:
         abs_path = pathlib.Path(blog.base_filepath, "media")

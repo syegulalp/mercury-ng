@@ -15,7 +15,12 @@ from cms.models import (
     Context,
 )
 from cms.routes.ui import format_grid, make_menu, make_buttons, Tab, Notice, Button
-from cms.routes.context import blog_context, user_context, template_context, generate_blog_title
+from cms.routes.context import (
+    blog_context,
+    user_context,
+    template_context,
+    generate_blog_title,
+)
 from cms.settings import PRODUCT_NAME, PRODUCT_VERSION
 
 import hashlib
@@ -274,7 +279,9 @@ def save_template(user: User, blog_template: Template, blog_id):
 @template_context
 @user_context(UserPermission.DESIGNER)
 def republish_template(
-    user: User, blog_template: Template, blog_id,
+    user: User,
+    blog_template: Template,
+    blog_id,
 ):
     blog_template.enqueue()
     Queue.start(blog_template.blog)

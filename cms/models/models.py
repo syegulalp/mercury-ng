@@ -11,8 +11,6 @@ from peewee import (
 
 from playhouse.sqlite_ext import RowIDField, SearchField, FTSModel
 
-# from playhouse.shortcuts import model_to_dict
-
 from bottle import SimpleTemplate
 
 from .base import BaseModel, OtherModel, db_context, Metadata, MetadataModel
@@ -424,7 +422,8 @@ class Theme(BaseModel):
     def save_copy(self):
         now = datetime.datetime.now()
         return self.make_instance(
-            None, f"{self.title} (Rev. {now.year}/{now.month}/{now.day})",
+            None,
+            f"{self.title} (Rev. {now.year}/{now.month}/{now.day})",
         )
 
     @property
@@ -941,7 +940,7 @@ class Post(BaseModel):
     def sortby_id(self, descending: bool = False):
         return self.order_by(Post.id.desc(descending))
 
-    def filterby_status(self, filter_type = "draft"):
+    def filterby_status(self, filter_type="draft"):
         status = getattr(PublicationStatus, filter_type.upper())
         return self.where(Post.status == status)
 
@@ -1599,7 +1598,10 @@ class MediaAssociation(BaseModel):
 
 class Tag(BaseModel):
     title = TextField(null=False, index=True)
-    blog = ForeignKeyField(Blog, index=True,)
+    blog = ForeignKeyField(
+        Blog,
+        index=True,
+    )
     is_hidden = BooleanField(default=False)
     basename = TextField(null=False)
 
@@ -1705,7 +1707,11 @@ class Template(BaseModel):
     Contains templates used in a blog theme.
     """
 
-    theme = ForeignKeyField(Theme, null=False, index=True,)
+    theme = ForeignKeyField(
+        Theme,
+        null=False,
+        index=True,
+    )
     title = CharField(null=False)
     text = TextField(null=True)
     template_type = TemplateTypeField(null=False, index=True)
@@ -1831,7 +1837,10 @@ class TemplateMapping(BaseModel):
     Templates can have multiple mappings.
     """
 
-    template = ForeignKeyField(Template, index=True,)
+    template = ForeignKeyField(
+        Template,
+        index=True,
+    )
     mapping = TextField(null=False)
     archive_xref = CharField(max_length=8, null=True)
     date_last_modified = DateTimeField(default=datetime.datetime.utcnow)
@@ -1861,14 +1870,17 @@ class TemplateMapping(BaseModel):
 
 class FileInfo(BaseModel):
     """
-    A single physical file path created by a template mapping.    
+    A single physical file path created by a template mapping.
     The `unique_path` field ensures that no two fileinfos in a blog
     will have the same path.
     """
 
     # recursive will delete FileInfoMapping
     filepath = TextField(null=False, index=True)
-    templatemapping = ForeignKeyField(TemplateMapping, index=True,)
+    templatemapping = ForeignKeyField(
+        TemplateMapping,
+        index=True,
+    )
     template = ForeignKeyField(Template, index=True)
     blog = ForeignKeyField(Blog, index=True)
     unique_path = TextField(unique=True, index=True, null=False)
@@ -2040,7 +2052,8 @@ class FileInfo(BaseModel):
                                 )
 
                         FileInfoMapping.create(
-                            fileinfo=fi, post=p,
+                            fileinfo=fi,
+                            post=p,
                         )
 
     @classmethod
@@ -2143,8 +2156,15 @@ class FileInfoMapping(BaseModel):
     with a given blog post, include template, or index template.
     """
 
-    fileinfo = ForeignKeyField(FileInfo, index=True,)
-    post = ForeignKeyField(Post, null=True, index=True,)
+    fileinfo = ForeignKeyField(
+        FileInfo,
+        index=True,
+    )
+    post = ForeignKeyField(
+        Post,
+        null=True,
+        index=True,
+    )
 
 
 class Context(BaseModel):
@@ -2315,8 +2335,13 @@ class Queue(BaseModel):
     def reset_failed(cls, blog):
         now = datetime.datetime.utcnow()
         Queue.update(
-            status=QueueStatus.WAITING, date_inserted=now, date_updated=now,
-        ).where(Queue.status == QueueStatus.FAILED, Queue.blog == blog,).execute()
+            status=QueueStatus.WAITING,
+            date_inserted=now,
+            date_updated=now,
+        ).where(
+            Queue.status == QueueStatus.FAILED,
+            Queue.blog == blog,
+        ).execute()
 
     @classmethod
     def add_control(cls, blog):
@@ -2573,7 +2598,8 @@ class ArchiveContext:
                 month = c.context_id
                 som = datetime.datetime(year=year, month=month, day=1)
                 current_context = current_context.where(
-                    Post.date_published >= som, Post.date_published < next_month(som),
+                    Post.date_published >= som,
+                    Post.date_published < next_month(som),
                 )
             elif c.context_type == "C":
                 category: Category = Category.get_by_id(c.context_id)

@@ -136,12 +136,18 @@ def republish_blog_fast(user: User, blog: Blog, pass_: int = 0):
     blog_fileinfos = all_fileinfos.where(FileInfo.template << all_templates)
     total_fileinfo_count = blog_fileinfos.count()
 
-    published_fileinfo_mappings = FileInfoMapping.select(FileInfoMapping.fileinfo).where(FileInfoMapping.post << blog.published_posts)
-    published_fileinfos = blog_fileinfos.where(FileInfo.id << published_fileinfo_mappings)
+    published_fileinfo_mappings = FileInfoMapping.select(
+        FileInfoMapping.fileinfo
+    ).where(FileInfoMapping.post << blog.published_posts)
+    published_fileinfos = blog_fileinfos.where(
+        FileInfo.id << published_fileinfo_mappings
+    )
 
     fileinfos = published_fileinfos.paginate(pass_, 100)
 
-    text = f"Adding fileinfos {pass_ * 100} of {total_fileinfo_count}. Don't navigate away"
+    text = (
+        f"Adding fileinfos {pass_ * 100} of {total_fileinfo_count}. Don't navigate away"
+    )
     redir = f"/blog/{blog.id}/republish/{pass_+1}"
     headers = f'<meta http-equiv="Refresh" content="0; URL={redir}">'
 
@@ -296,9 +302,7 @@ def create_fileinfos_for_template(
                 [template_to_republish],
                 {template_to_republish.id: [_ for _ in template_to_republish.mappings]},
             )
-            text = (
-                f"Processed {pass_*100} of {total_post_count}... (Don't navigate away yet!)"
-            )
+            text = f"Processed {pass_*100} of {total_post_count}... (Don't navigate away yet!)"
 
         else:
             redir = f"/blog/{blog.id}/republish-template/{template_id}"

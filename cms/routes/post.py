@@ -19,7 +19,12 @@ from cms.models import (
     System,
 )
 from cms.routes.ui import make_menu, Notice, format_grid
-from cms.routes.context import blog_context, user_context, post_context, generate_blog_title
+from cms.routes.context import (
+    blog_context,
+    user_context,
+    post_context,
+    generate_blog_title,
+)
 from cms.models.utils import str_to_date, unsafe
 from cms.settings import PRODUCT_VERSION
 

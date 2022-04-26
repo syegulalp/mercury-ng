@@ -31,20 +31,21 @@ def format_grid(
         if _.startswith("filter:"):
             filter_field = _[7:]
             filter_value = request.query[_]
-            filtering.append([getattr(sort_model, f"filterby_{filter_field}"), filter_value])
+            filtering.append(
+                [getattr(sort_model, f"filterby_{filter_field}"), filter_value]
+            )
             qdict[_] = filter_value
 
-    
     for sort, sort_value in sorting:
         listing = sort(listing, sort_value)
     for filter, filter_value in filtering:
         listing = filter(listing, filter_value)
-    
 
     params = {"total": listing.count(), "listing_model": listing.model()}
 
     params.update(
-        last=int(ceil(params["total"] / 20)), page=int(request.query.get("page", 1)),
+        last=int(ceil(params["total"] / 20)),
+        page=int(request.query.get("page", 1)),
     )
 
     params.update(
@@ -58,7 +59,9 @@ def format_grid(
     params.update(
         local_count=listing2.count(), start_of_page=params["current_position"] - 19
     )
-    params.update(end_of_page=params["start_of_page"] + params["local_count"] - 1,)
+    params.update(
+        end_of_page=params["start_of_page"] + params["local_count"] - 1,
+    )
 
     return template(
         "include/grid.tpl",

@@ -15,7 +15,8 @@ class MetadataModel:
             obj_id = self.id
         try:
             get_key = Metadata.select().where(
-                Metadata.object_name == obj_name, Metadata.object_id == obj_id,
+                Metadata.object_name == obj_name,
+                Metadata.object_id == obj_id,
             )
             if key:
                 get_key = get_key.where(Metadata.key == key).get()
