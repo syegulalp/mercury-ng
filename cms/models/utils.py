@@ -2,15 +2,15 @@ import datetime
 import regex as re
 import urllib
 
+DEFAULT_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
 DATE_FORMATS = (
-    "%Y-%m-%d %H:%M:%S",
+    DEFAULT_DATE_FORMAT,
     "%Y-%m-%d %H:%M",
     "%Y-%m-%d %H",
     "%Y-%m-%d",
     "%Y-%m-%d %H:%M:%S.%f",
 )
-
-DATE_FORMAT = DATE_FORMATS[0]
 
 from cms.settings import SALT
 
@@ -41,7 +41,7 @@ def str_to_date(string: str) -> str:
 
 
 def date_to_str(dt: datetime.datetime) -> datetime.datetime:
-    return datetime.datetime.strftime(dt, DATE_FORMAT)
+    return datetime.datetime.strftime(dt, DEFAULT_DATE_FORMAT)
 
 
 def next_month(dt: datetime.datetime) -> datetime.datetime:
