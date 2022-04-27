@@ -1,7 +1,3 @@
-import datetime
-import regex as re
-import urllib
-
 DEFAULT_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 DATE_FORMATS = (
@@ -14,56 +10,58 @@ DATE_FORMATS = (
 
 from cms.settings import SALT
 
-import html
-import pathlib
-import os, sys
-import hashlib
-import smtplib
+from datetime import datetime, timedelta
+import regex as re
+import urllib
+from html import escape
+from pathlib import Path
+from hashlib import pbkdf2_hmac
+from smtplib import SMTP
 from email.message import EmailMessage
 
-unsafe = lambda x: html.escape(x, True)
+import os, sys
+
+unsafe = lambda x: escape(x, True)
 
 
-def fullpath(path_obj: pathlib.Path) -> pathlib.Path:
+def fullpath(path_obj: Path) -> Path:
     if path_obj.exists():
         return path_obj.resolve()
     else:
-        return pathlib.Path(os.getcwd(), path_obj).resolve()
+        return Path(os.getcwd(), path_obj).resolve()
 
 
 def str_to_date(string: str) -> str:
     for format in DATE_FORMATS:
         try:
-            return datetime.datetime.strptime(string.strip(), format)
+            return datetime.strptime(string.strip(), format)
         except ValueError:
             continue
     raise ValueError(f"No valid time format found for {string}")
 
 
-def date_to_str(dt: datetime.datetime) -> datetime.datetime:
-    return datetime.datetime.strftime(dt, DEFAULT_DATE_FORMAT)
+def date_to_str(dt: datetime) -> datetime:
+    return datetime.strftime(dt, DEFAULT_DATE_FORMAT)
 
 
-def next_month(dt: datetime.datetime) -> datetime.datetime:
+def next_month(dt: datetime) -> datetime:
     year = dt.year
     month = dt.month + 1
     if month == 13:
         month = 1
         year += 1
-    return datetime.datetime(year=year, month=month, day=1)
+    return datetime(year=year, month=month, day=1)
 
 
-def previous_month(dt: datetime.datetime, last_day=True) -> datetime.datetime:
+def previous_month(dt: datetime, last_day=True) -> datetime:
     if last_day:
-        return datetime.datetime(
-            year=dt.year, month=dt.month, day=1
-        ) + datetime.timedelta(seconds=-1)
+        return datetime(year=dt.year, month=dt.month, day=1) + timedelta(seconds=-1)
     year = dt.year
     month = dt.month - 1
     if month == 0:
         month == 12
         year -= 1
-    return datetime.datetime(year=year, month=month, day=1)
+    return datetime(year=year, month=month, day=1)
 
 
 def remove_accents(input_str: str) -> str:
@@ -101,7 +99,7 @@ def create_basename(basename: str) -> str:
 
 
 def hash_password(password: str) -> str:
-    hashed_pwd = hashlib.pbkdf2_hmac("sha512", password.encode("utf-8"), SALT, 100000)
+    hashed_pwd = pbkdf2_hmac("sha512", password.encode("utf-8"), SALT, 100000)
     return hashed_pwd
 
 
@@ -116,7 +114,7 @@ def send_email(results: str):
 
     # Send the message via our own SMTP server.
     try:
-        s = smtplib.SMTP("localhost")
+        s = SMTP("localhost")
         s.send_message(msg)
         s.quit()
     except Exception as e:
