@@ -169,8 +169,6 @@ class SpecialTemplate(SimpleTemplate):
             eval(self.co, env)
         except Exception as e:
             lasterr = e.__traceback__.tb_next
-            # print (self.co.__dir__())
-            # print (e.__traceback__.tb_next.tb_frame.f_code.co_filename)
             raise TemplateError(e, self, lasterr.tb_lineno)
         if env.get("_rebase"):
             subtpl, rargs = env.pop("_rebase")
@@ -2043,7 +2041,6 @@ class FileInfo(BaseModel):
 
                         if created:
                             for idx, context_data in enumerate(archive_context):
-                                # print ("FIID", fi.id)
                                 Context.create(
                                     fileinfo=fi,
                                     context_type=context_id[idx],
@@ -2099,7 +2096,6 @@ class FileInfo(BaseModel):
         return f"{self.filepath}.preview.{self.blog.base_filetype}"
 
     def write_preview_file(self):
-        # print(self.id)
         self.write_file(True)
         self.update(preview_built=True).where(FileInfo.id == self).execute()
 
@@ -2110,11 +2106,13 @@ class FileInfo(BaseModel):
         self.update(preview_built=False).where(FileInfo.id == self).execute()
 
     def write_file(self, as_preview=False):
-        output_template = self.template
-        if output_template.template_type == TemplateType.POST:
-            ctx = ArchiveContext(self.mappings.get().post, self.templatemapping)
-        else:
-            ctx = ArchiveContext(self, self.templatemapping)
+        output_template: Template = self.template
+        context_obj = (
+            self.mappings.get().post
+            if output_template.template_type == TemplateType.POST
+            else self
+        )
+        ctx = ArchiveContext(context_obj, self.templatemapping)
 
         output_text = output_template.render(post=ctx.post, blog=ctx.blog, archive=ctx)
         output_path = pathlib.Path(
@@ -2425,7 +2423,7 @@ class Queue(BaseModel):
                 )
                 job.date_updated = datetime.datetime.utcnow()
                 job.save()
-                sleep(random.random())
+                # sleep(random.random())
 
             print(
                 f"Finished {total} jobs for blog {blog.id} in {clock()-begin:.3f} secs."
@@ -2450,7 +2448,7 @@ class Queue(BaseModel):
     @classmethod
     @db_context
     def run(cls, job, batch_count=None, batch_time_limit=None):
-        gc.disable()
+        # gc.disable()
         blog = job.blog
         batch = (
             cls.select()
@@ -2474,8 +2472,8 @@ class Queue(BaseModel):
 
         for item in batch:
             try:
-                f = item.fileinfo
-                t = item.obj_type
+                f: FileInfo = item.fileinfo
+                t: QueueObjType = item.obj_type
                 if t == QueueObjType.WRITE_FILEINFO:
                     if f.preview_built:
                         f.clear_preview_file()
@@ -2492,7 +2490,6 @@ class Queue(BaseModel):
                 item.status = QueueStatus.FAILED
                 try:
                     item.failure_data = str(e)
-                # ? don't know if we need this anymore, test it
                 except Exception as ee:
                     item.failure_data = str(ee)
                 item.save()
@@ -2512,7 +2509,7 @@ class Queue(BaseModel):
                 if last_time > batch_time_limit:
                     break
 
-        gc.enable()
+        # gc.enable()
         return count, last_time
 
 
