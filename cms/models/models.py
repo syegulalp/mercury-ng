@@ -2448,7 +2448,6 @@ class Queue(BaseModel):
     @classmethod
     @db_context
     def run(cls, job, batch_count=None, batch_time_limit=None):
-        # gc.disable()
         blog = job.blog
         batch = (
             cls.select()
@@ -2465,10 +2464,12 @@ class Queue(BaseModel):
             batch = batch.limit(batch_count)
 
         start_time = clock()
-        last_time = 0.0
+        last_time: 0.0
         count = 0
 
         item: Queue
+
+        delete_items = []
 
         for item in batch:
             try:
@@ -2501,7 +2502,7 @@ class Queue(BaseModel):
                 )
                 item.save()
             else:
-                item.delete_instance()
+                delete_items.append(item)
 
             count += 1
             last_time = clock() - start_time
@@ -2509,7 +2510,10 @@ class Queue(BaseModel):
                 if last_time > batch_time_limit:
                     break
 
-        # gc.enable()
+        with db.atomic():
+            for d in delete_items:
+                d.delete_instance()
+
         return count, last_time
 
 
@@ -2519,7 +2523,7 @@ class ArchiveContext:
 
     # TODO: consolidate all next/previous into a single property on the post itself.
 
-    context_cache = {}
+    # context_cache = {}
 
     def __init__(self, context_obj, template_mapping):
         self.mapping = template_mapping
