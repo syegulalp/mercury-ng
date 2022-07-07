@@ -39,7 +39,7 @@ from cms.errors import UserNotLoggedIn, MissingFileInfo
 from cms import settings
 
 from itertools import product
-from time import sleep, perf_counter as clock
+from time import perf_counter as clock
 
 import datetime
 import os
@@ -48,14 +48,12 @@ import sys
 import shutil
 import functools
 import regex as re
-import random
 import subprocess
 import traceback
 import json
 import imp
 import zipfile
 import io
-import gc
 
 
 class TemplateError(Exception):
@@ -94,20 +92,6 @@ class SpecialTemplate(SimpleTemplate):
         self.theme = self.template_obj.theme
 
         ka["source"] = self.template_obj.text
-
-        # Replacing `insert`s wholesale does not seem to provide
-        # any performance benefit.
-
-        # text = self.template_obj.text
-        # while True:
-        #     found = False
-        #     for match in self.insert_re.finditer(text):
-        #         found = True
-        #         tpl = Template.get(theme=self.theme, title=match[1]).text
-        #         text = text.replace(match[0], tpl, 1)
-        #     if not found:
-        #         break
-        # ka["source"] = text
 
         super().__init__(*a, **ka)
 
