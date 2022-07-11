@@ -162,7 +162,9 @@ def edit_template(user: User, blog_template: Template, blog_id):
         and blog_template.fileinfos.count() == 0
     ):
         notice.fail(
-            f'This template has no fileinfos created for it yet. <a target="_blank" href="{blog_template.blog.manage_link}/create-fileinfos/{blog_template.id}">Click here to build fileinfos in the background.</a>'
+            "This template has no fileinfos created for it yet."
+            f'<a target="_blank" href="{blog_template.blog.manage_link}/create-fileinfos/{blog_template.id}">'
+            "Click here to build fileinfos in the background.</a>"
         )
 
     script = f"""

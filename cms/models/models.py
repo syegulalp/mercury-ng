@@ -910,22 +910,6 @@ class Permission(BaseModel):
 
 
 class Post(BaseModel):
-    def sortby_status(self, descending: bool = False):
-        return self.order_by(Post.status.desc(descending))
-
-    def sortby_pub(self, descending: bool = False):
-        return self.order_by(Post.date_published.desc(descending))
-
-    def sortby_title(self, descending: bool = False):
-        return self.order_by(Post.title.desc(descending))
-
-    def sortby_id(self, descending: bool = False):
-        return self.order_by(Post.id.desc(descending))
-
-    def filterby_status(self, filter_type="draft"):
-        status = getattr(PublicationStatus, filter_type.upper())
-        return self.where(Post.status == status)
-
     title = TextField(null=False)
     basename = TextField(null=False)
     excerpt_ = TextField(null=True)
@@ -942,6 +926,22 @@ class Post(BaseModel):
     permalink_cache = {}
 
     excerpt_re = re.compile("<p>(.*?)</p>")
+
+    def sortby_status(self, descending: bool = False):
+        return self.order_by(Post.status.desc(descending))
+
+    def sortby_pub(self, descending: bool = False):
+        return self.order_by(Post.date_published.desc(descending))
+
+    def sortby_title(self, descending: bool = False):
+        return self.order_by(Post.title.desc(descending))
+
+    def sortby_id(self, descending: bool = False):
+        return self.order_by(Post.id.desc(descending))
+
+    def filterby_status(self, filter_type="draft"):
+        status = getattr(PublicationStatus, filter_type.upper())
+        return self.where(Post.status == status)
 
     @property
     def date_created_str(self):

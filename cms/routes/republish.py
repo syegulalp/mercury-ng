@@ -32,11 +32,18 @@ def republish_options(user: User, blog: Blog):
     text = f"""
 <h1>Republishing options</h1><hr>
 <ul>
-<li><a href="{l}/republish"><b>Republish:</b></a> Iterate through all fileinfos for all pages in the blog, push them into the queue, then run the queue manually.</li>
-<li><a href="{l}/runqueue"><b>Run queue manually:</b></a> Iterate through the queue by way of the web interface, rather than the job runner script.</li>
+<li><a href="{l}/republish"><b>Republish:</b></a> Iterate through all fileinfos
+for all pages in the blog, push them into the queue, then run the queue manually.</li>
+
+<li><a href="{l}/runqueue"><b>Run queue manually:</b></a> Iterate through the queue
+by way of the web interface, rather than the job runner script.</li>
+
 <li><a href="{l}/rebuild-fileinfos"><b>Rebuild fileinfos:</b></a> Delete and recreate all fileinfos for this blog.</li>
 <hr/>
-<li><a href="{l}/republish-by-page"><b>Republish by page:</b></a> Iterate through all fileinfos for all pages in the blog, push them into the queue, then run the queue manually. Slower than the above republishing option; mainly used for debugging.</li>
+
+<li><a href="{l}/republish-by-page"><b>Republish by page:</b></a> Iterate through
+all fileinfos for all pages in the blog, push them into the queue, then run the
+queue manually. Slower than the above republishing option; mainly used for debugging.</li>
 </ul>
 """
     return template(
@@ -275,7 +282,8 @@ def create_fileinfos_for_template(
     user: User, blog: Blog, template_id: int, pass_: int = 0
 ):
     """
-    Given a template, clears any fileinfos associated with it, then iterates through all posts and generates new fileinfos associated with that template.
+    Given a template, clears any fileinfos associated with it,
+    then iterates through all posts and generates new fileinfos associated with that template.
     """
 
     total_post_count = blog.published_posts.count()

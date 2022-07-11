@@ -28,7 +28,7 @@ def format_grid(
             sort_value = request.query[_]
             sorting.append([getattr(sort_model, f"sortby_{sort_field}"), sort_value])
             qdict[_] = sort_value
-        if _.startswith("filter:"):
+        elif _.startswith("filter:"):
             filter_field = _[7:]
             filter_value = request.query[_]
             filtering.append(

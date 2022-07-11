@@ -460,7 +460,8 @@ def make_menu(start, context=None):
             submenu_string.append(
                 f"""
 <a class="btn btn-sm btn-light" href="{current_menu["path"](context)}">{unsafe(current_menu["text"](context))}</a>
-<a class="btn btn-sm btn-light dropdown-toggle dropdown-toggle-split" id="{menu_item}_dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<a class="btn btn-sm btn-light dropdown-toggle dropdown-toggle-split"
+id="{menu_item}_dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 <span class="sr-only">Toggle Dropdown</span>
 </a>
 </button>

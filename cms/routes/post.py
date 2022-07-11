@@ -286,7 +286,8 @@ def save_post_(post: Post, blog: Blog, notice: Notice, save_action: str):
 
             if post.date_published < datetime.datetime.utcnow():
                 notice.fail(
-                    'Post was scheduled to go live in the past. Status not changed. To publish this post immediately, select "Save and publish now".'
+                    "Post was scheduled to go live in the past. Status not changed. "
+                    'To publish this post immediately, select "Save and publish now".'
                 )
             else:
                 post.status = PublicationStatus.SCHEDULED

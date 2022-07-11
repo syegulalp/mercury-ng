@@ -26,7 +26,9 @@ def blog_queue(user: User, blog: Blog):
             blog
         ).date_updated < datetime.datetime.now() - datetime.timedelta(seconds=10):
             notice.fail(
-                f"Queue is marked as currently running, but the last update to the queue was more than 10 seconds ago. The queue process may have failed, or may be stuck on a particularly long-running job. (<a href='{blog.queue_manage_link}/run'>Restart)</a>"
+                "Queue is marked as currently running, but the last update to the queue "
+                "was more than 10 seconds ago. The queue process may have failed, or may "
+                f"be stuck on a particularly long-running job. (<a href='{blog.queue_manage_link}/run'>Restart)</a>"
             )
         else:
             notice.notice(

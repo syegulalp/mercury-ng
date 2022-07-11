@@ -114,7 +114,10 @@ def blog_settings(user: User, blog: Blog, tab: str = ""):
             new_basepath = pathlib.Path(current_blog.base_filepath).resolve()
             if not new_basepath.exists():
                 notice.ok(
-                    "The filepath provided doesn't point to an existing directory, but one will be created at that location if possible. Note that any files from your <i>existing</i> blog's output directory will <i>not</i> be copied to the new directory; you must do that manually."
+                    "The filepath provided doesn't point to an existing directory, "
+                    "but one will be created at that location if possible. "
+                    "Note that any files from your <i>existing</i> blog's output directory "
+                    "will <i>not</i> be copied to the new directory; you must do that manually."
                 )
 
             current_blog.base_url = request.forms.base_url
@@ -229,7 +232,8 @@ def new_blog_category_core(user: User, blog: Blog):
                 > 0
             ):
                 notice.fail(
-                    "At least one other category in this blog shares the selected basename. Choose another basename."
+                    "At least one other category in this blog "
+                    "shares the selected basename. Choose another basename."
                 )
 
         category = Category(
@@ -664,7 +668,8 @@ def delete_tag(user: User, blog: Blog, tag_id: int):
     if request.method == "GET":
         if tag.posts.count():
             notice.notice(
-                'Deleting tags still attached to existing posts is not recommended. We recommend <a href="{tag.merge_link}">merging this tag with another tag first.</a>'
+                "Deleting tags still attached to existing posts is not recommended. "
+                'We recommend <a href="{tag.merge_link}">merging this tag with another tag first.</a>'
             )
         notice.warning(
             f"Are you sure you want to delete tag {tag.title_for_display}?",
