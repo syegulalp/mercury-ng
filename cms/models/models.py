@@ -97,17 +97,17 @@ class SpecialTemplate(SimpleTemplate):
 
     def _insert(self, _env, _name=None, **kwargs):
         try:
-            template_to_insert = self.localcache[(self.theme.id, _name)]
+            template_to_insert = SpecialTemplate.localcache[(self.theme.id, _name)]
         except KeyError:
             template_to_insert = Template.get(theme=self.theme, title=_name)._cached()
-            self.localcache[(self.theme.id, _name)] = template_to_insert
+            SpecialTemplate.localcache[(self.theme.id, _name)] = template_to_insert
         env = _env.copy()
         env.update(kwargs)
         return template_to_insert.execute(env["_stdout"], env)
 
     def _load(self, _env, _name=None, **kwargs):
         try:
-            template_to_insert = self.localcache[(self.theme.id, _name)]
+            template_to_insert = SpecialTemplate.localcache[(self.theme.id, _name)]
         except KeyError:
             template_to_insert = Template.get(theme=self.theme, title=_name)
             if template_to_insert.text.startswith("#!"):
@@ -117,7 +117,7 @@ class SpecialTemplate(SimpleTemplate):
                 template_to_insert = module
             else:
                 template_to_insert = template_to_insert._cached().execute([], {})
-            self.localcache[(self.theme.id, _name)] = template_to_insert
+            SpecialTemplate.localcache[(self.theme.id, _name)] = template_to_insert
         return template_to_insert
 
     def _ssi(self, _env, _name=None, **kwargs):
