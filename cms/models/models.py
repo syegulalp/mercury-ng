@@ -122,10 +122,10 @@ class SpecialTemplate(SimpleTemplate):
 
     def _ssi(self, _env, _name=None, **kwargs):
         try:
-            ssi_to_insert = self.ssi[(self.theme.id, _name)]
+            ssi_to_insert = SpecialTemplate.ssi[(self.theme.id, _name)]
         except KeyError:
             ssi_to_insert = Template.get(theme=self.theme, title=_name).ssi()
-            self.ssi[(self.theme.id, _name)] = ssi_to_insert
+            SpecialTemplate.ssi[(self.theme.id, _name)] = ssi_to_insert
         _env["_stdout"].append(ssi_to_insert)
         return _env
 
