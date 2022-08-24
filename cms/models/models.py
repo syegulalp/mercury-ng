@@ -157,7 +157,7 @@ class SpecialTemplate(SimpleTemplate):
         if env.get("_rebase"):
             subtpl, rargs = env.pop("_rebase")
             rargs["base"] = "".join(_stdout)  # copy stdout
-            del _stdout[:]  # clear stdout
+            _stdout = []  # clear stdout
             return self._include(env, subtpl, **rargs)
         return env
 
