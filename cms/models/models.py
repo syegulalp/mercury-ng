@@ -2448,7 +2448,7 @@ class Queue(BaseModel):
             batch = batch.limit(batch_count)
 
         start_time = clock()
-        last_time: 0.0
+        last_time = 0.0
         count = 0
 
         item: Queue
