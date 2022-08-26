@@ -11,15 +11,17 @@ DATE_FORMATS = (
 from cms.settings import SALT
 
 from datetime import datetime, timedelta
-import regex as re
-import urllib
 from html import escape
 from pathlib import Path
 from hashlib import pbkdf2_hmac
 from smtplib import SMTP
 from email.message import EmailMessage
 
-import os, sys
+import regex as re
+import urllib
+import os
+import sys
+import unicodedata
 
 unsafe = lambda x: escape(x, True)
 
@@ -65,8 +67,6 @@ def previous_month(dt: datetime, last_day=True) -> datetime:
 
 
 def remove_accents(input_str: str) -> str:
-    import unicodedata
-
     nfkd_form = unicodedata.normalize("NFKD", input_str)
     return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
