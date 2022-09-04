@@ -80,7 +80,8 @@ def run_queue(user: User, blog: Blog):
     p = int(request.query.get("p", 0))
 
     if p:
-        count, timer = Queue.run.__wrapped__(Queue, job, batch_time_limit=2.0)
+        # count, timer = Queue.run.__wrapped__(Queue, job, batch_time_limit=2.0)
+        count, timer = Queue.run(Queue, job, batch_time_limit=2.0)
     else:
         first_run = True
         count = 0

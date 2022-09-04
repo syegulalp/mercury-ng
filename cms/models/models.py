@@ -2430,7 +2430,7 @@ class Queue(BaseModel):
         job.delete_instance()
 
     @classmethod
-    @db_context
+    # @db_context
     def run(cls, job, batch_count=None, batch_time_limit=None):
         blog = job.blog
         batch = (
@@ -2456,48 +2456,50 @@ class Queue(BaseModel):
         delete_items = []
 
         for item in batch:
-            try:
-                f: FileInfo = item.fileinfo
-                t: QueueObjType = item.obj_type
-                if t == QueueObjType.WRITE_FILEINFO:
-                    if f.preview_built:
-                        f.clear_preview_file()
-                    f.write_file()
-                elif t == QueueObjType.DEL_FILEINFO:
-                    if f.preview_built:
-                        f.clear_preview_file()
-                    f.remove_file()
-                elif t == QueueObjType.DEL_FILE:
-                    delpath = pathlib.Path(blog.base_filepath, item.text_data)
-                    if delpath.exists():
-                        os.remove(str(delpath))
-            except TemplateError as e:
-                item.status = QueueStatus.FAILED
+            with db.atomic():
                 try:
-                    item.failure_data = str(e)
-                except Exception as ee:
-                    item.failure_data = str(ee)
-                item.save()
-            except Exception as e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                item.status = QueueStatus.FAILED
-                item.failure_data = (
-                    "".join(traceback.format_tb(exc_traceback)) + "\n" + str(e)
-                )
-                item.save()
-            else:
-                delete_items.append(item)
+                    f: FileInfo = item.fileinfo
+                    t: QueueObjType = item.obj_type
+                    if t == QueueObjType.WRITE_FILEINFO:
+                        if f.preview_built:
+                            f.clear_preview_file()
+                        f.write_file()
+                    elif t == QueueObjType.DEL_FILEINFO:
+                        if f.preview_built:
+                            f.clear_preview_file()
+                        f.remove_file()
+                    elif t == QueueObjType.DEL_FILE:
+                        delpath = pathlib.Path(blog.base_filepath, item.text_data)
+                        if delpath.exists():
+                            os.remove(str(delpath))
+                except TemplateError as e:
+                    item.status = QueueStatus.FAILED
+                    try:
+                        item.failure_data = str(e)
+                    except Exception as ee:
+                        item.failure_data = str(ee)
+                    item.save()
+                except Exception as e:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    item.status = QueueStatus.FAILED
+                    item.failure_data = (
+                        "".join(traceback.format_tb(exc_traceback)) + "\n" + str(e)
+                    )
+                    item.save()
+                else:
+                    delete_items.append(item)
 
-            count += 1
-            last_time = clock() - start_time
-            if batch_time_limit:
-                if last_time > batch_time_limit:
-                    break
+                count += 1
+                last_time = clock() - start_time
+                if batch_time_limit:
+                    if last_time > batch_time_limit:
+                        break
 
         with db.atomic():
             for d in delete_items:
                 d.delete_instance()
 
+        # db.close()
         return count, last_time
 
 
