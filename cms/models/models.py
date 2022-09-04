@@ -2426,7 +2426,7 @@ class Queue(BaseModel):
     def run_immediately(cls, blog):
         # This must be called from within a db context!
         job = Queue.add_control(blog)
-        cls.run.__wrapped__(cls, job)
+        cls.run(cls, job)
         job.delete_instance()
 
     @classmethod
