@@ -13,6 +13,8 @@ from bottle import SimpleTemplate
 
 from .base import BaseModel, OtherModel, Metadata, MetadataModel
 
+from .fieldtypes import *
+
 from .enums import (
     PublicationStatus,
     QueueObjType,
@@ -158,54 +160,6 @@ class SpecialTemplate(SimpleTemplate):
             _stdout = []  # clear stdout
             return self._include(env, subtpl, **rargs)
         return env
-
-
-class PubStatusField(IntegerField):
-    def db_value(self, value):
-        return value.value
-
-    def python_value(self, value):
-        return PublicationStatus(value)
-
-
-class TemplateTypeField(IntegerField):
-    def db_value(self, value):
-        return value.value
-
-    def python_value(self, value):
-        return TemplateType(value)
-
-
-class PublishingModeField(IntegerField):
-    def db_value(self, value):
-        return value.value
-
-    def python_value(self, value):
-        return TemplatePublishingMode(value)
-
-
-class QueueObjTypeField(IntegerField):
-    def db_value(self, value):
-        return value.value
-
-    def python_value(self, value):
-        return QueueObjType(value)
-
-
-class QueueStatusField(IntegerField):
-    def db_value(self, value):
-        return value.value
-
-    def python_value(self, value):
-        return None if value is None else QueueStatus(value)
-
-
-class PermissionField(IntegerField):
-    def db_value(self, value):
-        return value.value
-
-    def python_value(self, value):
-        return UserPermission(value)
 
 
 class Log(BaseModel):
