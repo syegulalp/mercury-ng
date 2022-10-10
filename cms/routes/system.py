@@ -322,6 +322,9 @@ def new_blog_base(user: User, system):
                 Queue.run_queue_(blog)
                 return blog.manage_link, None
 
+    # TODO: push to queue, then redirect to queue builder.
+    # Don't build here.
+
     text1 = template(
         "include/blog-settings.tpl",
         blog=blog,
