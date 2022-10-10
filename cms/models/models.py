@@ -13,7 +13,15 @@ from bottle import SimpleTemplate
 
 from .base import BaseModel, OtherModel, Metadata, MetadataModel
 
-from .fieldtypes import *
+from .fieldtypes import (
+    PubStatusField,
+    PermissionField,
+    TemplateTypeField,
+    PublishingModeField,
+    QueueObjTypeField,
+    QueueStatusField,
+)
+
 
 from .enums import (
     PublicationStatus,
