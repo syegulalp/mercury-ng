@@ -11,6 +11,7 @@ db = DBTYPE(
         ("cache_size", -1024 * 64),
         ("journal_mode", "wal"),
         ("synchronous", 0),
-        ("temp_store", "MEMORY"),
+        ("temp_store", 2),
+        ("mmap_size", 1024 * 1024),
     ),
 )
