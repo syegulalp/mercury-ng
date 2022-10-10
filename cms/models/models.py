@@ -1,5 +1,3 @@
-# import cProfile, pstats
-
 from peewee import (
     IntegerField,
     TextField,
@@ -13,7 +11,7 @@ from playhouse.sqlite_ext import RowIDField, SearchField, FTSModel
 
 from bottle import SimpleTemplate
 
-from .base import BaseModel, OtherModel, db_context, Metadata, MetadataModel
+from .base import BaseModel, OtherModel, Metadata, MetadataModel
 
 from .enums import (
     PublicationStatus,
@@ -1916,7 +1914,7 @@ class FileInfo(BaseModel):
         return self.priorities[Template._dbcache(self.template_id).template_type]
 
     @classmethod
-    def make_filepaths(cls, post, mapping_string):
+    def make_filepaths(cls, post: Post, mapping_string):
 
         """
         If the mapping begins with a single or double quote,
@@ -2005,13 +2003,13 @@ class FileInfo(BaseModel):
         return final_stack
 
     @classmethod
-    def build_fileinfos(cls, posts, blog, templates, mappings):
+    def build_fileinfos(cls, posts, blog: Blog, templates, mappings):
         if posts is None:
             posts = [Post(blog=blog)]
-        for p in posts:
+        for post in posts:
             for template in templates:
                 for mapping in mappings[template.id]:
-                    filepaths = cls.make_filepaths(p, mapping.mapping)
+                    filepaths = cls.make_filepaths(post, mapping.mapping)
                     for filepath, archive_context, context_id in filepaths:
                         fi, created = FileInfo.get_or_create(
                             unique_path=f"{blog.id},{filepath}",
@@ -2034,11 +2032,11 @@ class FileInfo(BaseModel):
 
                         FileInfoMapping.create(
                             fileinfo=fi,
-                            post=p,
+                            post=post,
                         )
 
     @classmethod
-    def build_archive_fileinfos_from_posts(cls, posts, blog):
+    def build_archive_fileinfos_from_posts(cls, posts, blog: Blog):
         templates = [
             t
             for t in blog.templates.where(
@@ -2051,7 +2049,7 @@ class FileInfo(BaseModel):
         cls.build_fileinfos(posts, blog, templates, mappings)
 
     @classmethod
-    def build_index_fileinfos_for_blog(cls, blog):
+    def build_index_fileinfos_for_blog(cls, blog: Blog):
         templates = [
             t
             for t in blog.templates.where(
