@@ -20,15 +20,14 @@ from .fieldtypes import (
     QueueStatusField,
 )
 
-
 from .enums import (
     PublicationStatus,
     QueueObjType,
     TemplateType,
     TemplatePublishingMode,
     QueueStatus,
-    editor_button_colors,
     UserPermission,
+    editor_button_colors,
 )
 from cms.settings import APP_URL, APP_DIR
 from cms.db import db
@@ -36,10 +35,10 @@ from cms.models.utils import (
     create_basename,
     next_month,
     date_to_str,
-    unsafe,
     previous_month,
     hash_password,
     tagstrip,
+    unsafe,
 )
 from cms.models.template import SpecialTemplate
 
@@ -54,12 +53,10 @@ import os
 import pathlib
 import sys
 import shutil
-
 import regex as re
 import subprocess
 import traceback
 import json
-
 import zipfile
 import io
 
