@@ -5,6 +5,7 @@ from peewee import Model, IntegerField, TextField, CharField, OperationalError
 from cms.models.utils import unsafe
 from time import perf_counter as clock
 from cms import settings
+import gc
 
 
 class MetadataModel:
@@ -134,6 +135,7 @@ def db_context(func):
             try:
                 with db.atomic():
                     result = func(*a, **ka)
+                    gc.collect()
             except OperationalError as e:
                 if clock() - start > 30.0:
                     db.close()

@@ -9,8 +9,6 @@ from peewee import (
 
 from playhouse.sqlite_ext import RowIDField, SearchField, FTSModel
 
-from bottle import SimpleTemplate
-
 from .base import BaseModel, OtherModel, Metadata, MetadataModel
 
 from .fieldtypes import (
@@ -43,7 +41,9 @@ from cms.models.utils import (
     hash_password,
     tagstrip,
 )
-from cms.errors import UserNotLoggedIn, MissingFileInfo
+from cms.models.template import SpecialTemplate
+
+from cms.errors import UserNotLoggedIn, MissingFileInfo, TemplateError
 from cms import settings
 
 from itertools import product
@@ -54,120 +54,14 @@ import os
 import pathlib
 import sys
 import shutil
-import functools
+
 import regex as re
 import subprocess
 import traceback
 import json
-import imp
+
 import zipfile
 import io
-
-
-class TemplateError(Exception):
-    """
-    Exception used for errors in a CMS template.
-    """
-
-    def __init__(self, message: str, tpl: "SpecialTemplate", lineno: int):
-        self.tpl = tpl
-        self.message = message
-        self.lineno = lineno
-        super().__init__(message)
-
-    def __str__(self):
-        try:
-            l = ("\n" + unsafe(self.tpl.template_obj.text) + "\n").split("\n")[
-                self.lineno
-            ]
-        except Exception as e:
-            l = unsafe(self.tpl.template_obj.text)
-        return f"Template: {self.tpl.template_obj.title}\nLine: {self.lineno}\n>>> {l}\n{self.message}"
-
-
-class SpecialTemplate(SimpleTemplate):
-    """
-    Modified version of the Bottle SimpleTemplate. Modifications include special keywords and caching of compiled templates in a blog's template set.
-    """
-
-    localcache = {}
-    ssi = {}
-
-    insert_re = re.compile(r"""^\s*?%\s*?insert\s*?\(['"](.*?)['"]\)""", re.MULTILINE)
-
-    def __init__(self, template: "Template", *a, **ka):
-        self.template_obj = template
-        self.theme = self.template_obj.theme
-
-        ka["source"] = self.template_obj.text
-
-        super().__init__(*a, **ka)
-
-    def _insert(self, _env, _name=None, **kwargs):
-        try:
-            template_to_insert = SpecialTemplate.localcache[(self.theme.id, _name)]
-        except KeyError:
-            template_to_insert = Template.get(theme=self.theme, title=_name)._cached()
-            SpecialTemplate.localcache[(self.theme.id, _name)] = template_to_insert
-        env = _env.copy()
-        env.update(kwargs)
-        return template_to_insert.execute(env["_stdout"], env)
-
-    def _load(self, _env, _name=None, **kwargs):
-        try:
-            template_to_insert = SpecialTemplate.localcache[(self.theme.id, _name)]
-        except KeyError:
-            template_to_insert = Template.get(theme=self.theme, title=_name)
-            if template_to_insert.text.startswith("#!"):
-                code = template_to_insert.text
-                module = imp.new_module(_name)
-                exec(code, module.__dict__)
-                template_to_insert = module
-            else:
-                template_to_insert = template_to_insert._cached().execute([], {})
-            SpecialTemplate.localcache[(self.theme.id, _name)] = template_to_insert
-        return template_to_insert
-
-    def _ssi(self, _env, _name=None, **kwargs):
-        try:
-            ssi_to_insert = SpecialTemplate.ssi[(self.theme.id, _name)]
-        except KeyError:
-            ssi_to_insert = Template.get(theme=self.theme, title=_name).ssi()
-            SpecialTemplate.ssi[(self.theme.id, _name)] = ssi_to_insert
-        _env["_stdout"].append(ssi_to_insert)
-        return _env
-
-    def execute(self, _stdout, kwargs):
-        env = self.defaults.copy()
-        env.update(kwargs)
-        env.update(
-            {
-                "_stdout": _stdout,
-                "_printlist": _stdout.extend,
-                "insert": functools.partial(self._insert, env),
-                "ssi": functools.partial(self._ssi, env),
-                "include": functools.partial(self._include, env),
-                "rebase": functools.partial(self._rebase, env),
-                "_rebase": None,
-                "_str": self._str,
-                "_escape": self._escape,
-                "get": env.get,
-                "setdefault": env.setdefault,
-                "defined": env.__contains__,
-                "load": functools.partial(self._load, env),
-            }
-        )
-        try:
-            eval(self.co, env)
-        except Exception as e:
-            lasterr = e.__traceback__.tb_next
-            raise TemplateError(e, self, lasterr.tb_lineno)
-        if env.get("_rebase"):
-            subtpl, rargs = env.pop("_rebase")
-            rargs["base"] = "".join(_stdout)  # copy stdout
-            _stdout = []  # clear stdout
-            return self._include(env, subtpl, **rargs)
-        return env
 
 
 class Log(BaseModel):
@@ -431,7 +325,7 @@ class Theme(BaseModel):
         return theme_instance
 
     @classmethod
-    def install_theme(cls, theme_name="default_theme"):
+    def install_theme(cls, theme_name: str = "default_theme"):
 
         # TODO: move these to sitewide settings
 
@@ -698,7 +592,7 @@ class Blog(BaseModel):
 
     # Utility methods
 
-    def create_category(self, title: str, description="", basename=None):
+    def create_category(self, title: str, description: str = "", basename: str = None):
         new_category = Category.create(
             title=title, description=description, blog=self, basename=basename
         )
