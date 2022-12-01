@@ -1,3 +1,7 @@
+import cms.models.template as template
+from cms.models.utils import unsafe
+
+
 class UserNotLoggedIn(Exception):
     pass
 
@@ -15,7 +19,7 @@ class TemplateError(Exception):
     Exception used for errors in a CMS template.
     """
 
-    def __init__(self, message: str, tpl: "SpecialTemplate", lineno: int):
+    def __init__(self, message: str, tpl: "template.SpecialTemplate", lineno: int):
         self.tpl = tpl
         self.message = message
         self.lineno = lineno
