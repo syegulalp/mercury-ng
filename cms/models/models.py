@@ -1753,8 +1753,8 @@ class FileInfo(BaseModel):
     priorities = {
         TemplateType.SSI: 9,
         TemplateType.POST: 8,
-        TemplateType.ARCHIVE: 7,
-        TemplateType.INDEX: 6,
+        TemplateType.ARCHIVE: 2,
+        TemplateType.INDEX: 1,
     }
 
     def delete_instance(self, *a, **ka):
