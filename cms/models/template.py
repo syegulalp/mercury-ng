@@ -5,9 +5,12 @@ import re
 import imp
 from cms.errors import TemplateError
 
+
 class SpecialTemplate(SimpleTemplate):
     """
-    Modified version of the Bottle SimpleTemplate. Modifications include special keywords and caching of compiled templates in a blog's template set.
+    Modified version of the Bottle SimpleTemplate.
+    Modifications include special keywords and caching
+    of compiled templates in a blog's template set.
     """
 
     localcache = {}
