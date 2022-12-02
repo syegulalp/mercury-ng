@@ -2024,11 +2024,6 @@ class Queue(BaseModel):
     date_inserted = DateTimeField(default=datetime.datetime.utcnow)
     date_updated = DateTimeField(default=datetime.datetime.utcnow)
 
-    # profiler = None
-
-    worker = None
-    state = None
-
     # Listing methods
 
     @property
