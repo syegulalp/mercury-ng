@@ -1859,6 +1859,7 @@ class FileInfo(BaseModel):
     def build_fileinfos(cls, posts, blog: Blog, templates, mappings):
         if posts is None:
             posts = [Post(blog=blog)]
+        # for post, template in ((a, b) for a in posts for b in templates):
         for post in posts:
             for template in templates:
                 for mapping in mappings[template.id]:
@@ -2315,7 +2316,7 @@ class Queue(BaseModel):
                             f.clear_preview_file()
                         f.remove_file()
                     elif t == QueueObjType.DEL_FILE:
-                        delpath = pathlib.Path(blog.base_filepath, item.text_data)
+                        delpath = pathlib.Path(str(blog.base_filepath), item.text_data)
                         if delpath.exists():
                             os.remove(str(delpath))
                 except TemplateError as e:
