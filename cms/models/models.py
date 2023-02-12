@@ -220,7 +220,6 @@ class Theme(BaseModel):
         return create_basename(self.title)
 
     def as_archive(self):
-
         mem = io.BytesIO()
         archive = zipfile.ZipFile(mem, mode="w", compression=zipfile.ZIP_DEFLATED)
 
@@ -323,7 +322,6 @@ class Theme(BaseModel):
 
     @classmethod
     def install_theme(cls, theme_name: str = "default_theme"):
-
         # TODO: move these to sitewide settings
 
         theme_data_path = pathlib.Path(cls.theme_data_base_path, theme_name)
@@ -333,7 +331,6 @@ class Theme(BaseModel):
             theme = json.load(theme_data_file)
 
         with db.atomic():
-
             new_theme = Theme.create(
                 title=theme["title"],
                 description=theme["description"],
@@ -345,7 +342,6 @@ class Theme(BaseModel):
                 with open(
                     pathlib.Path(theme_data_path, "templates", k), encoding="UTF-8"
                 ) as template_file:
-
                     new_template = Template.create(
                         theme=new_theme,
                         title=template["title"],
@@ -366,7 +362,6 @@ class Theme(BaseModel):
 
 
 class Blog(BaseModel):
-
     title = TextField(null=False)
     description = TextField(null=True)
     base_url = TextField(null=False)
@@ -624,7 +619,6 @@ class Blog(BaseModel):
         FileInfo.build_index_fileinfos_for_blog(self)
 
     def apply_theme(self, theme: "Theme"):
-
         with db.atomic():
             self.remove_theme()
             theme.make_instance(self)
@@ -693,7 +687,6 @@ class Category(BaseModel):
 
     @property
     def posts(self):
-
         cat_posts = PostCategory.select(PostCategory.post).where(
             PostCategory.category == self
         )
@@ -838,7 +831,6 @@ class Post(BaseModel):
 
     @property
     def excerpt(self):
-
         if self.excerpt_ and len(self.excerpt_) > 0:
             return self.excerpt_
 
@@ -898,7 +890,6 @@ class Post(BaseModel):
 
     @property
     def permalink_fileinfo(self):
-
         mappings_for_blog_post_template = TemplateMapping.select(
             TemplateMapping.id
         ).where(
@@ -922,7 +913,6 @@ class Post(BaseModel):
 
     @property
     def permalink_filepath(self):
-
         try:
             return Post.permalink_cache[self.id]
         except KeyError:
@@ -1007,7 +997,6 @@ class Post(BaseModel):
         return "ID", "", "Status", "Title", "Open by", "Author", "Category", "Pub Date"
 
     def listing(self):
-
         return (
             self.id,
             f'<a target="_blank" href="{self.live_link}"><span class="badge badge-primary">Link</span></a>'
@@ -1171,9 +1160,7 @@ class Post(BaseModel):
             [_ for _ in self.categories],
             [_ for _ in self.tags],
         ):
-
             for group in groups:
-
                 try:
                     neighbors.append(
                         group.published_posts.where(
@@ -1227,7 +1214,6 @@ class Post(BaseModel):
         total = 0
 
         with db.atomic():
-
             self.status = PublicationStatus.DRAFT
             self.save()
 
@@ -1687,11 +1673,9 @@ class TemplateMapping(BaseModel):
         Queue.delete().where(Queue.fileinfo << self.fileinfos).execute()
 
     def clear_fileinfos(self):
-
         Post.permalink_cache = {}
 
         with db.atomic():
-
             FileInfoMapping.delete().where(
                 FileInfoMapping.fileinfo << self.fileinfos
             ).execute()
@@ -1768,7 +1752,6 @@ class FileInfo(BaseModel):
 
     @classmethod
     def make_filepaths(cls, post: Post, mapping_string):
-
         """
         If the mapping begins with a single or double quote,
         we interpret it as a string to be formatted,
@@ -2036,7 +2019,6 @@ class Queue(BaseModel):
         return "ID", "Type", "Fileinfo", "Template", "Status", "Priority", "Date"
 
     def listing(self):
-
         return (
             self.id,
             QueueObjType.txt[self.obj_type],
@@ -2141,7 +2123,6 @@ class Queue(BaseModel):
 
     @classmethod
     def start(cls, force_start=False):
-
         if Queue.is_locked():
             if not force_start:
                 return
@@ -2213,13 +2194,11 @@ class Queue(BaseModel):
 
     @classmethod
     def run_queue_(cls, blog=None):
-
         if blog is not None:
             cls.add_control(blog)
             print(f"Adding control job for blog {blog.id}.")
 
         while True:
-
             try:
                 job = cls.control_jobs().get()
             except Queue.DoesNotExist:
@@ -2336,11 +2315,11 @@ class Queue(BaseModel):
                 else:
                     delete_items.append(item)
 
-                count += 1
-                last_time = clock() - start_time
-                if batch_time_limit:
-                    if last_time > batch_time_limit:
-                        break
+            count += 1
+            last_time = clock() - start_time
+            if batch_time_limit:
+                if last_time > batch_time_limit:
+                    break
 
         with db.atomic():
             for d in delete_items:
@@ -2351,7 +2330,6 @@ class Queue(BaseModel):
 
 
 class ArchiveContext:
-
     settings = settings
 
     # TODO: consolidate all next/previous into a single property on the post itself.
@@ -2491,7 +2469,6 @@ class ArchiveContext:
             return None
 
         try:
-
             return (
                 self.blog.published_posts.where(
                     (Post.date_published < self.post.date_published)
