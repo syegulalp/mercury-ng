@@ -2279,8 +2279,6 @@ class Queue(BaseModel):
 
         item: Queue
 
-        delete_items = []
-
         for item in batch:
             with db.atomic():
                 try:
@@ -2313,7 +2311,7 @@ class Queue(BaseModel):
                     )
                     item.save()
                 else:
-                    delete_items.append(item)
+                    item.delete_instance()
 
             count += 1
             last_time = clock() - start_time
@@ -2321,11 +2319,6 @@ class Queue(BaseModel):
                 if last_time > batch_time_limit:
                     break
 
-        with db.atomic():
-            for d in delete_items:
-                d.delete_instance()
-
-        # db.close()
         return count, last_time
 
 
