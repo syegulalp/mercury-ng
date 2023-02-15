@@ -12,9 +12,13 @@ class Tab:
 
 
 def format_grid(
-    listing, buttons="", search_query=None, sort_model=None, listing_fmt={}
+    listing,
+    buttons="",
+    search_query=None,
+    sort_model=None,
+    listing_fmt={},
+    mass_actions=None,
 ):
-
     qdict = {}
     if search_query:
         qdict["query"] = search_query
@@ -69,6 +73,7 @@ def format_grid(
         qdict=qdict,
         listing_fmt=listing_fmt,
         listing=listing2.iterator(),
+        mass_actions=mass_actions,
         **params,
     )
 

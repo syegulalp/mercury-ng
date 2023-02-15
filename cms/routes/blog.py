@@ -40,12 +40,14 @@ def close_search(link):
     return Button("Close search", f"{link}?{urlencode(qdict)}", "info")
 
 
+blog_mass_actions = ("Republish", "Unpublish", "Go live")
+
+
 @route("/blog/<blog_id:int>")
 @db_context
 @blog_context
 @user_context(UserPermission.AUTHOR)
 def blogs_menu(user: User, blog: Blog, search_term=None):
-
     posts = blog.posts.order_by(Post.date_published.desc())
 
     if search_term is not None:
@@ -63,7 +65,11 @@ def blogs_menu(user: User, blog: Blog, search_term=None):
     )
 
     text = format_grid(
-        posts, buttons=buttons, search_query=search_term, sort_model=Post
+        posts,
+        buttons=buttons,
+        search_query=search_term,
+        sort_model=Post,
+        mass_actions=blog_mass_actions,
     )
 
     return template(
@@ -89,7 +95,6 @@ def blog_search(blog_id):
 @blog_context
 @user_context(UserPermission.DESIGNER)
 def blog_settings(user: User, blog: Blog, tab: str = ""):
-
     if tab not in SETTINGS_TABS:
         tab = ""
 
@@ -98,7 +103,6 @@ def blog_settings(user: User, blog: Blog, tab: str = ""):
 
     if request.method == "POST":
         if tab == "":
-
             current_blog.title = request.forms.blog_title
             if current_blog.title == "":
                 notice.fail("Your blog name must not be blank.")
@@ -106,7 +110,6 @@ def blog_settings(user: User, blog: Blog, tab: str = ""):
             current_blog.description = request.forms.blog_description
 
         elif tab == "url":
-
             current_blog.base_filepath = request.forms.base_filepath
             if current_blog.base_filepath == "":
                 notice.fail("Your blog's filepath must not be blank.")
@@ -201,12 +204,10 @@ def new_blog_category(blog_id: int):
 @blog_context
 @user_context(UserPermission.DESIGNER)
 def new_blog_category_core(user: User, blog: Blog):
-
     notice = Notice()
     category = Category(blog=blog)
 
     if request.method == "POST":
-
         category_title = request.forms["category_title"]
         category_description = request.forms["category_description"]
         category_basename = request.forms["category_basename"]
@@ -274,7 +275,6 @@ def blog_category_edit(user: User, blog: Blog, category_id: int):
     notice = Notice()
 
     if request.method == "POST":
-
         new_category_title = request.forms["category_title"]
         new_category_description = request.forms["category_description"]
         new_category_basename = request.forms["category_basename"]
@@ -331,7 +331,6 @@ def blog_category_edit(user: User, blog: Blog, category_id: int):
 @blog_context
 @user_context(UserPermission.DESIGNER)
 def blog_category_delete(user: User, blog: Blog, category_id: int):
-
     category: Category
     category = Category.get_by_id(category_id)
     notice = Notice()
@@ -357,7 +356,6 @@ def blog_category_delete(user: User, blog: Blog, category_id: int):
     )
 
     if request.method == "POST":
-
         confirm_key = request.forms.action_key
         if not confirm_key:
             notice.fail("No delete key provided")
@@ -458,7 +456,6 @@ def blog_cat_posts_search(blog_id, category_id):
 @blog_context
 @user_context(UserPermission.AUTHOR)
 def blog_tags(user: User, blog: Blog, search_term=None):
-
     tags = blog.tags.order_by(Tag.title.asc())
     if search_term is not None:
         tags = Tag.search(search_term, tags)
@@ -546,7 +543,6 @@ def blog_category(user: User, blog: Blog, tag_id: int):
 @blog_context
 @user_context(UserPermission.AUTHOR)
 def blog_tags_in_posts(user: User, blog: Blog, tag_id: int, search_term=None):
-
     tag: Tag
     tag = Tag.get_by_id(tag_id)
     posts = tag.posts.order_by(Post.date_published.desc())
@@ -588,14 +584,12 @@ def blog_tags_in_posts_search(blog_id, tag_id):
 @blog_context
 @user_context(UserPermission.EDITOR)
 def merge_tag(user: User, blog: Blog, tag_id: int):
-
     old_tag: Tag = Tag.get_by_id(tag_id)
     new_tag: Tag = Tag(title="")
 
     notice = Notice()
 
     if request.method == "POST":
-
         new_tag.title = request.forms.get("tag_title", "")
 
         target_tags = (
@@ -610,7 +604,6 @@ def merge_tag(user: User, blog: Blog, tag_id: int):
             new_tag = target_tags.get()
 
         if request.forms.get("save"):
-
             post: Post
             for post in old_tag.posts.limit(25):
                 post.remove_tag(old_tag)
@@ -620,13 +613,11 @@ def merge_tag(user: User, blog: Blog, tag_id: int):
             t_count = old_tag.posts.count()
 
             if t_count:
-
                 notice.ok(
                     f"25 instance of tag {old_tag.title_for_display} merged with tag {new_tag.title_for_display}. {t_count} remaining."
                 )
 
             else:
-
                 blog.queue_indexes()
 
                 notice.ok(
@@ -656,7 +647,6 @@ def merge_tag(user: User, blog: Blog, tag_id: int):
 @blog_context
 @user_context(UserPermission.EDITOR)
 def delete_tag(user: User, blog: Blog, tag_id: int):
-
     tag: Tag = Tag.get_by_id(tag_id)
 
     notice = Notice()
@@ -679,7 +669,6 @@ def delete_tag(user: User, blog: Blog, tag_id: int):
         )
 
     else:
-
         confirm_key = request.forms.action_key
         if not confirm_key:
             notice.fail("No delete key provided")
@@ -808,7 +797,6 @@ def blog_export_theme_export(user: User, blog: Blog):
 @blog_context
 @user_context(UserPermission.EDITOR)
 def blog_export_theme(user: User, blog: Blog, step=0, substep=1):
-
     message = ""
     zip_path = pathlib.Path(blog.base_filepath, f"{blog.id}.zip")
 
@@ -887,7 +875,6 @@ def blog_export_theme(user: User, blog: Blog, step=0, substep=1):
     # ? users?
 
     if step != -1:
-
         archive.close()
         substep += 1
 
