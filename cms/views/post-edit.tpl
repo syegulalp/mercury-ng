@@ -2,13 +2,14 @@
 % from cms.models.enums import editor_button_colors, PublicationStatus, editor_actions
 % # from cms.models.utils import date_to_str
 % from cms.routes.post import BLOG_SIDEBAR as sidebar_items
-% from bottle import template
+% from bottle import template, request
 %
 % is_new = post.id is None
 % include('include/header.tpl')
 % form_action = "new-post" if post.id is None else "save"
 
 <form id="texteditorform" method="post" action="{{form_action}}">
+    <input type="hidden" name="referer" value="{{request.headers.get('Referer')}}"/>
     <div class="container-margins">
         <div class="row">
             <div class="col texteditorcol">
