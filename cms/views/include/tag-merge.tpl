@@ -11,7 +11,7 @@
         Changing any of these fields will require your blog to be republished. Don't make any changes on this page unless you're prepared to do that.
     </div>    
 
-    <p><button type="submit" class="btn btn-primary" name="verify" value="verify">Verify changes</button></p>
+    <p><button type="submit" class="btn btn-primary" name="verify" value="verify">Verify short version of tag name</button></p>
     <p><button type="submit" class="btn btn-success" name="save" value="save">Merge tag (25 posts at a time)</button></p>
 
 </form>
