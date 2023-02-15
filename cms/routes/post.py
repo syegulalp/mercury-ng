@@ -375,10 +375,11 @@ def save_post(user: User, post: Post):
         post.open_for_editing_by = None
         post.save()
 
-        if request.forms["referer"].endswith(blog.create_post_link):
-            redir = blog.manage_link
-        else:
-            redir = request.forms["referer"]
+        referer = request.forms["referer"]
+        redir = blog.manage_link
+
+        if referer and referer.endswith(blog.create_post_link):
+            redir = referer
 
     elif save_action in (
         Actions.Preview.PREVIEW_ONLY,
