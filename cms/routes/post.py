@@ -28,6 +28,8 @@ from cms.routes.context import (
 from cms.models.utils import str_to_date, unsafe
 from cms.settings import PRODUCT_VERSION
 
+from cms.routes.utils import upload_script
+
 # TODO: all notices must have `unsafe`!
 # have an unsafe string renderer for objects
 # idea: accept an iterable, with unsafe() items
@@ -176,11 +178,16 @@ def edit_post(user: User, post: Post):
     if post.excerpt_ is None:
         post.excerpt_ = ""
 
-    script = f"""<script>
-var upload_path = "{post.upload_link}";
-var alt_editor_css = "{editor_css()},";
-</script>
-<script src="/static/js/drop.js"></script>"""
+    script = upload_script(
+        upload_path = post.upload_link,
+        editor_css = editor_css()
+    )
+
+#     script = f"""<script>
+# var upload_path = "{post.upload_link}";
+# var alt_editor_css = "{editor_css()},";
+# </script>
+# <script src="/static/js/drop.js"></script>"""
 
     return template(
         "post-edit.tpl",
@@ -376,11 +383,11 @@ def save_post(user: User, post: Post):
         post.save()
 
         referer = request.forms["referer"]
-        redir = blog.manage_link
-
+        redir = referer        
+        
         if referer and referer.endswith(blog.create_post_link):
-            redir = referer
-
+            redir = blog.manage_link
+        
     elif save_action in (
         Actions.Preview.PREVIEW_ONLY,
         Actions.Preview.SAVE_AND_PREVIEW,
@@ -482,10 +489,16 @@ def media_json(user: User, post: Post):
 
     blog = post.blog
     text = format_grid(post.media.order_by(Media.id.desc()))
-    script = f"""<script>var upload_path = "{post.upload_link}";
-function refreshMediaList(){{}};
-</script>
-<script src="/static/js/drop.js"></script>"""
+    script = upload_script(
+        upload_path=post.upload_link,
+        refresh_media=True
+    )
+
+#     script = f"""<script>var upload_path = "{post.upload_link}";
+# function refreshMediaList(){{}};
+# </script>
+# <script src="/static/js/drop.js"></script>"""
+
     return template(
         "default.tpl",
         post=post,

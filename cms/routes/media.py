@@ -4,7 +4,7 @@ from bottle import route, template, request
 from cms.models import Blog, User, db_context, Media, UserPermission, Post
 from cms.routes.ui import format_grid, make_menu, make_buttons, Button, Notice
 from cms.routes.context import blog_context, user_context, generate_blog_title
-
+from cms.routes.utils import upload_script
 from cms.settings import PRODUCT_VERSION
 import hashlib, os, datetime
 
@@ -15,11 +15,16 @@ import hashlib, os, datetime
 @user_context(UserPermission.AUTHOR)
 def media_menu(user: User, blog: Blog, search_term=None):
 
-    script = f"""<script>
-var upload_path = "{blog.upload_link}";
-function refreshMediaList(){{}};
-</script>
-<script src="/static/js/drop.js"></script>"""
+#     script = f"""<script>
+# var upload_path = "{blog.upload_link}";
+# function refreshMediaList(){{}};
+# </script>
+# <script src="/static/js/drop.js"></script>"""
+
+    script = upload_script(
+        upload_path = blog.upload_link,
+        refresh_media=True
+    )
 
     media = blog.media.order_by(Media.date_created.desc())
 
@@ -84,12 +89,18 @@ def media_upload_advanced(user: User, blog: Blog):
             else:
                 upload_link = post.upload_link
 
-    script = f"""<script>
-var upload_path = "{upload_link}";
-var uploadFilePath = "{custom_upload_path}";
-function refreshMediaList(){{}};
-</script><script src="/static/js/drop.js"></script>
-"""
+#     script = f"""<script>
+# var upload_path = "{upload_link}";
+# var uploadFilePath = "{custom_upload_path}";
+# function refreshMediaList(){{}};
+# </script><script src="/static/js/drop.js"></script>
+# """
+
+    script = upload_script(
+        upload_path=upload_link,
+        upload_file_path=custom_upload_path,
+        refresh_media=True
+    )
 
     text = template(
         "include/upload.tpl",
