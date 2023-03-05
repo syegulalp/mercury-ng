@@ -767,6 +767,9 @@ class Post(BaseModel):
     status = PubStatusField(default=PublicationStatus.DRAFT, index=True)
     open_for_editing_by = ForeignKeyField(User, null=True)
 
+    class Meta:
+        indexes = ((("blog", "date_published"), False),)
+
     permalink_cache = {}
 
     excerpt_re = re.compile("<p>(.*?)</p>")
@@ -1561,7 +1564,7 @@ class Template(BaseModel):
 
     @classmethod
     def listing_columns(cls):
-        return "ID", "Title", "Mapping", "Mode",""
+        return "ID", "Title", "Mapping", "Mode", ""
 
     def listing(self):
         return (
@@ -1570,12 +1573,12 @@ class Template(BaseModel):
             "[<i>No mapping for includes</i>]"
             if self.template_type in (TemplateType.INCLUDE, TemplateType.MEDIA)
             else f"<code>{self.default_mapping.mapping}</code>",
-            "N/A" if self.template_type in (TemplateType.INCLUDE, TemplateType.MEDIA)
+            "N/A"
+            if self.template_type in (TemplateType.INCLUDE, TemplateType.MEDIA)
             else self.publishing_mode.txt[self.publishing_mode],
             '<span class="badge badge-success">Default for archive</span>'
             if self.mappings.where(TemplateMapping.default_for_archive == True).count()
             else "",
-            
         )
 
     # Link methods
