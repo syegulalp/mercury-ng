@@ -1304,6 +1304,9 @@ class PostCategory(BaseModel):
     category = ForeignKeyField(Category, index=True)
     is_primary = BooleanField(default=True)
 
+    class Meta:
+        indexes = ((("post", "category", "is_primary"), False),)
+
 
 class Media(BaseModel):
     filename = TextField(null=False)
