@@ -683,6 +683,10 @@ class Category(BaseModel):
     blog = ForeignKeyField(Blog, index=True)
     default = BooleanField(default=True)
 
+    class Meta:
+        indexes = ((("blog", "title", "default"), False),)
+    
+
     # Fetch methods
 
     @property
@@ -1433,6 +1437,10 @@ class Tag(BaseModel):
     is_hidden = BooleanField(default=False)
     basename = TextField(null=False)
 
+    class Meta:
+        indexes = ((("blog", "title"), False),)
+
+
     @classmethod
     def search(cls, query, source=None):
         if source is None:
@@ -1995,6 +2003,9 @@ class FileInfoMapping(BaseModel):
         index=True,
     )
 
+    class Meta:
+        indexes = ((("fileinfo", "post"), False),)
+
 
 class Context(BaseModel):
     """
@@ -2019,6 +2030,10 @@ class Queue(BaseModel):
     failure_data = TextField(null=True)
     date_inserted = DateTimeField(default=datetime.datetime.utcnow)
     date_updated = DateTimeField(default=datetime.datetime.utcnow)
+
+    class Meta:
+        indexes = ((("obj_type", "status", "priority", "blog", "fileinfo"), False),)
+
 
     # Listing methods
 
