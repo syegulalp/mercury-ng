@@ -1317,6 +1317,9 @@ class Media(BaseModel):
     user = ForeignKeyField(User, index=True)
     blog = ForeignKeyField(Blog, index=True)
 
+    class Meta:
+        indexes = ((("blog", "date_created"), False),)
+
     @property
     def filesize(self):
         return self.full_filepath.stat().st_size
