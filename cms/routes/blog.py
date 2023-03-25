@@ -304,6 +304,8 @@ def blog_category_edit(user: User, blog: Blog, category_id: int):
                 notice.fail(
                     "At least one other category shares the selected basename. Choose another basename."
                 )
+            else:
+                category.basename = new_category_basename
 
         if new_category_description:
             category.description = new_category_description

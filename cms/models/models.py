@@ -685,7 +685,6 @@ class Category(BaseModel):
 
     class Meta:
         indexes = ((("blog", "title", "default"), False),)
-    
 
     # Fetch methods
 
@@ -1272,7 +1271,7 @@ class Post(BaseModel):
         try:
             cat_to_add = PostCategory.get(post=self, category=subcategory)
         except PostCategory.DoesNotExist:
-            PostCategory.create(post=self, category=subcategory)
+            PostCategory.create(post=self, category=subcategory, is_primary=False)
         else:
             pass
 
@@ -1285,7 +1284,7 @@ class Post(BaseModel):
             cat_to_remove.delete_instance()
 
     def clear_subcategories(self):
-        for subcat in self.categories_.where(PostCategory.is_primary == True):
+        for subcat in self.categories_.where(PostCategory.is_primary == False):
             subcat.delete_instance()
 
 
@@ -1439,7 +1438,6 @@ class Tag(BaseModel):
 
     class Meta:
         indexes = ((("blog", "title"), False),)
-
 
     @classmethod
     def search(cls, query, source=None):
@@ -2033,7 +2031,6 @@ class Queue(BaseModel):
 
     class Meta:
         indexes = ((("obj_type", "status", "priority", "blog", "fileinfo"), False),)
-
 
     # Listing methods
 
