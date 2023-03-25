@@ -948,12 +948,19 @@ class Post(BaseModel):
 
     @property
     def primary_category(self) -> Category:
-        return (
-            self.categories_.where(PostCategory.is_primary == True)
-            .limit(1)
-            .get()
-            .category
-        )
+        try:
+            return (
+                self.categories_.where(PostCategory.is_primary == True)
+                .limit(1)
+                .get()
+                .category
+            )
+        except Exception:
+            default_category = PostCategory(
+                post=self, category=self.blog.default_category, is_primary=True
+            )
+            default_category.save()
+            return default_category.category
 
     @property
     def categories_(self):
@@ -1263,7 +1270,7 @@ class Post(BaseModel):
                 Queue.add_delete_file_job(fileinfo.filepath, self.blog)
 
     def set_primary_category(self, new_category):
-        primary = PostCategory.get(post=self, is_primary=True)
+        primary, _ = PostCategory.get_or_create(post=self, is_primary=True)
         primary.category = new_category
         primary.save()
 
