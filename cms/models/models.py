@@ -955,7 +955,7 @@ class Post(BaseModel):
                 .get()
                 .category
             )
-        except Exception:
+        except PostCategory.DoesNotExist:
             default_category = PostCategory(
                 post=self, category=self.blog.default_category, is_primary=True
             )
