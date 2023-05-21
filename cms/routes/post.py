@@ -17,6 +17,7 @@ from cms.models import (
     Category,
     UserPermission,
     System,
+    TZ_UTC
 )
 from cms.routes.ui import make_menu, Notice, format_grid
 from cms.routes.context import (
@@ -219,7 +220,9 @@ def save_post_(post: Post, blog: Blog, notice: Notice, save_action: str):
     post.excerpt_ = (
         None if request.forms.post_excerpt == "" else request.forms.post_excerpt
     )
-    post.date_published = str_to_date(request.forms.date_published)
+    
+    unadjusted_publication_date = str_to_date(request.forms.date_published)
+    post.date_published = unadjusted_publication_date.astimezone(TZ_UTC).replace(tzinfo=None)    
     post.date_last_modified = datetime.datetime.utcnow()
 
     _basename = request.forms.get("post_basename", None)
