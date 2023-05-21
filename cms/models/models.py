@@ -59,7 +59,8 @@ import traceback
 import json
 import zipfile
 import io
-
+import zoneinfo
+TZ_UTC = zoneinfo.ZoneInfo("UTC")
 
 class Log(BaseModel):
     date = DateTimeField(default=datetime.datetime.utcnow, index=True)
@@ -770,6 +771,24 @@ class Post(BaseModel):
     status = PubStatusField(default=PublicationStatus.DRAFT, index=True)
     open_for_editing_by = ForeignKeyField(User, null=True)
 
+    def _adjust_date(self, date_value):
+        tz = zoneinfo.ZoneInfo(self.blog.timezone)
+        if date_value.tzinfo is None:
+            date_value = date_value.replace(tzinfo=TZ_UTC)
+        return date_value.astimezone(tz)
+    
+    @property
+    def date_created_tz(self):
+        return self._adjust_date(self.date_created)
+    
+    @property
+    def date_last_modified_tz(self):
+        return self._adjust_date(self.date_last_modified)    
+    
+    @property
+    def date_published_tz(self):
+        return self._adjust_date(self.date_published)
+
     class Meta:
         indexes = ((("blog", "date_published"), False),)
 
@@ -795,15 +814,15 @@ class Post(BaseModel):
 
     @property
     def date_created_str(self):
-        return date_to_str(self.date_created)
+        return date_to_str(self.date_created_tz)
 
     @property
     def date_published_str(self):
-        return date_to_str(self.date_published)
+        return date_to_str(self.date_published_tz)
 
     @property
     def date_last_modified_str(self):
-        return date_to_str(self.date_last_modified)
+        return date_to_str(self.date_last_modified_tz)
 
     @property
     def tags_list(self):

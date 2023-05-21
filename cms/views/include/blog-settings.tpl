@@ -2,7 +2,7 @@
 <form method="post">
 % end
 
-    % import pathlib
+    % import pathlib, zoneinfo
     % from cms.models.utils import fullpath
     % setup = "setup" in locals() 
     
@@ -20,6 +20,18 @@
         <input type="text" class="form-control" id="blog_description" aria-describedby="blog_description_help" name="blog_description"
         value="{{blog.description}}">
         <small id="blog_description_help" class="form-text text-muted">A sentence describing your blog.</small>
+    </div>
+
+    <div class="form-group">
+        <label for="blog_timezone">Blog timezone (currently <b>{{blog.timezone}}</b>)</label>
+        <select name="blog_timezone" class="form-control">
+        % for tz in sorted(list(zoneinfo.available_timezones())):
+            <option class="form-control" value="{{tz}}" {{"selected" if tz==blog.timezone else ""}}>{{tz}}</option>
+        % end
+        </select>
+        <small id="blog_timezone_help" class="form-text text-muted">The timezone you want your blog's posts to be shown in.
+            <br/><b>Changing this value requires that your rebuild your blog.</b>
+        </small>    
     </div>
 
     % elif tab=="media":

@@ -108,6 +108,7 @@ def blog_settings(user: User, blog: Blog, tab: str = ""):
                 notice.fail("Your blog name must not be blank.")
 
             current_blog.description = request.forms.blog_description
+            current_blog.timezone = request.forms.blog_timezone
 
         elif tab == "url":
             current_blog.base_filepath = request.forms.base_filepath
